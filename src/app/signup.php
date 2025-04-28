@@ -31,10 +31,7 @@ if ($_POST['password'] !== ($_POST['password_confirm'] ?? '')) {
 }
 
 if ($errors) {
-    $_SESSION['signup_errors'] = $errors;
-    $_SESSION['signup_old'] = $old_params;
-    header('Location: /signup.php');
-    exit;
+  redirect_with_errors('/signup.php', $errors, $old_params);
 }
 
 $pdo = getPDO();
