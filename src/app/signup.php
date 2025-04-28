@@ -13,6 +13,8 @@ $old_params = [
   'email' => $_POST['email'] ?? '',
 ];
 
+$errors = [];
+
 if (empty($_POST['username'])) {
   $errors['username'] = 'ユーザー名を入力してください。';
 }
