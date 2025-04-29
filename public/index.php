@@ -1,6 +1,8 @@
 <?php
 session_start();
 
+require_once __DIR__ . '/../src/lib/csrf.php';
+
 echo "Hello, World!";
 
 if (!isset($_SESSION['user_id'])) {
@@ -20,6 +22,7 @@ if (!isset($_SESSION['user_id'])) {
 <body>
   <?php if (isset($_SESSION['user_id'])): ?>
     <form action="/logout.php" method="post">
+      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
       <input type="submit" value="ログアウト">
     </form>
   <?php endif; ?>
