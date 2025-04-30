@@ -1,6 +1,15 @@
 <?php
 session_start();
 require_once __DIR__ . '/../src/app/get_post.php';
+require_once __DIR__ . '/../src/lib/csrf.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
+        header('Location: /index.php');
+        exit;
+    }
+    require_once __DIR__ . '/../src/app/delete_post.php';
+}
 
 $post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$post_id) {
@@ -33,6 +42,11 @@ if (!$post) {
                 <span class="post-date">投稿日時: <?= htmlspecialchars((new DateTime($post['created_at']))->format('Y/m/d H:i')) ?></span>
                 <?php if ($_SESSION['user_id'] === $post['user_id']): ?>
                     <a href="edit.php?id=<?= $post['id'] ?>" class="edit-link">編集</a>
+                    <form action="post.php?id=<?= $post['id'] ?>" method="post">
+                        <input type="hidden" name="id" value="<?= htmlspecialchars($post['id']) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
+                        <button type="submit" class="delete-button" onclick="return confirm('本当に削除しますか？')">削除</button>
+                    </form>
                 <?php endif; ?>
             </div>
             
