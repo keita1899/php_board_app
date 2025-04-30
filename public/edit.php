@@ -33,6 +33,11 @@ if (!$post) {
     exit;
 }
 
+if ($post['user_id'] !== $_SESSION['user_id']) {
+    header('Location: /index.php');
+    exit;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -44,7 +49,6 @@ if (!$post) {
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <?php if (isset($_SESSION['user_id'])): ?>
     <form action="edit.php" method="post">
       <input type="hidden" name="id" value="<?= htmlspecialchars($post['id']) ?>">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
@@ -66,8 +70,6 @@ if (!$post) {
         <a href="post.php?id=<?= $post['id'] ?>" class="edit-link">キャンセル</a>
       </div>
     </form>
-  <?php endif; ?>
-
 </body>
 </html>
 
