@@ -45,7 +45,8 @@ if (!$post) {
 </head>
 <body>
   <?php if (isset($_SESSION['user_id'])): ?>
-    <form action="edit.php?id=<?= $post['id'] ?>" method="post">
+    <form action="edit.php" method="post">
+      <input type="hidden" name="id" value="<?= htmlspecialchars($post['id']) ?>">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
       
       <div class="form-group">
