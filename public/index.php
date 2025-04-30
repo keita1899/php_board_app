@@ -2,9 +2,6 @@
 session_start();
 
 require_once __DIR__ . '/../src/lib/csrf.php';
-require_once __DIR__ . '/../src/lib/auth.php';
-
-require_login();
 
 $errors = $_SESSION['post_errors'] ?? [];
 $old = $_SESSION['post_old'] ?? [];
@@ -35,27 +32,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
       <input type="submit" value="ログアウト">
     </form>
+    <form action="index.php" method="post">
+      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
+      
+      <div class="form-group">
+        <label for="title">タイトル:</label>
+        <input type="text" id="title" name="title" value="<?= htmlspecialchars($old['title'] ?? '') ?>">
+        <?php $name = 'title'; include __DIR__ . '/../src/partials/error_message.php'; ?>
+      </div>
+  
+      <div class="form-group">
+        <label for="content">内容:</label>
+        <textarea id="content" name="content"><?= htmlspecialchars($old['content'] ?? '') ?></textarea>
+        <?php $name = 'content'; include __DIR__ . '/../src/partials/error_message.php'; ?>
+      </div>
+  
+      <div class="form-group">
+        <button type="submit">投稿する</button>
+      </div>
+    </form>
   <?php endif; ?>
 
-  <form action="index.php" method="post">
-    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
-    
-    <div class="form-group">
-      <label for="title">タイトル:</label>
-      <input type="text" id="title" name="title" value="<?= htmlspecialchars($old['title'] ?? '') ?>">
-      <?php $name = 'title'; include __DIR__ . '/../src/partials/error_message.php'; ?>
-    </div>
-
-    <div class="form-group">
-      <label for="content">内容:</label>
-      <textarea id="content" name="content"><?= htmlspecialchars($old['content'] ?? '') ?></textarea>
-      <?php $name = 'content'; include __DIR__ . '/../src/partials/error_message.php'; ?>
-    </div>
-
-    <div class="form-group">
-      <button type="submit">投稿する</button>
-    </div>
-  </form>
 </body>
 </html>
 
