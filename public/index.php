@@ -61,19 +61,21 @@ $posts = get_posts();
       <p>投稿はありません</p>
     <?php else: ?>
       <?php foreach ($posts as $post): ?>
-        <div class="post">
-          <div class="post-header">
-            <span class="post-author"><?= htmlspecialchars($post['username']) ?></span>
-            <span class="post-date"><?= htmlspecialchars((new DateTime($post['created_at']))->format('Y/m/d H:i')) ?></span>
-          </div>
-          <div class="post-title"><?= htmlspecialchars($post['title']) ?></div>
-          <div class="post-content"><?= htmlspecialchars($post['content']) ?></div>
-          <?php if ($post['updated_at'] !== $post['created_at']): ?>
-            <div class="post-meta">
-              編集日時: <?= htmlspecialchars((new DateTime($post['updated_at']))->format('Y/m/d H:i')) ?>
+        <a href="/post.php?id=<?= $post['id'] ?>" class="post-link">
+          <div class="post">
+            <div class="post-header">
+              <span class="post-author"><?= htmlspecialchars($post['username']) ?></span>
+              <span class="post-date"><?= htmlspecialchars((new DateTime($post['created_at']))->format('Y/m/d H:i')) ?></span>
             </div>
-          <?php endif; ?>
-        </div>
+            <div class="post-title"><?= htmlspecialchars($post['title']) ?></div>
+            <div class="post-content"><?= htmlspecialchars($post['content']) ?></div>
+            <?php if ($post['updated_at'] !== $post['created_at']): ?>
+              <div class="post-meta">
+                編集日時: <?= htmlspecialchars((new DateTime($post['updated_at']))->format('Y/m/d H:i')) ?>
+              </div>
+            <?php endif; ?>
+          </div>
+        </a>
       <?php endforeach; ?>
     <?php endif; ?>
   </div>

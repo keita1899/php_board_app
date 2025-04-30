@@ -1,0 +1,47 @@
+<?php
+session_start();
+require_once __DIR__ . '/../src/app/get_post.php';
+
+$post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+if (!$post_id) {
+    header('Location: /index.php');
+    exit;
+}
+
+$post = get_post($post_id);
+if (!$post) {
+    header('Location: /index.php');
+    exit;
+}
+?>
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($post['title']) ?></title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <a href="/index.php" class="back-link">← 戻る</a>
+        
+        <div class="post">
+            <div class="post-header">
+                <span class="post-author">投稿者: <?= htmlspecialchars($post['username']) ?></span>
+                <span class="post-date">投稿日時: <?= htmlspecialchars((new DateTime($post['created_at']))->format('Y/m/d H:i')) ?></span>
+            </div>
+            
+            <div class="post-title"><?= htmlspecialchars($post['title']) ?></div>
+            <div class="post-content"><?= htmlspecialchars($post['content']) ?></div>
+            
+            <?php if ($post['updated_at'] !== $post['created_at']): ?>
+                <div class="post-meta">
+                    最終更新: <?= htmlspecialchars((new DateTime($post['updated_at']))->format('Y/m/d H:i')) ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</body>
+</html>
