@@ -31,6 +31,9 @@ if (!$post) {
             <div class="post-header">
                 <span class="post-author">投稿者: <?= htmlspecialchars($post['username']) ?></span>
                 <span class="post-date">投稿日時: <?= htmlspecialchars((new DateTime($post['created_at']))->format('Y/m/d H:i')) ?></span>
+                <?php if ($_SESSION['user_id'] === $post['user_id']): ?>
+                    <a href="edit.php?id=<?= $post['id'] ?>" class="edit-link">編集</a>
+                <?php endif; ?>
             </div>
             
             <div class="post-title"><?= htmlspecialchars($post['title']) ?></div>

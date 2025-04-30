@@ -102,3 +102,13 @@ h1 {
 .back-link:hover {
     text-decoration: underline;
 }
+
+.edit-link {
+  margin-left: 1rem;
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.edit-link:hover {
+  text-decoration: underline;
+}
