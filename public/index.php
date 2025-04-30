@@ -2,6 +2,9 @@
 session_start();
 
 require_once __DIR__ . '/../src/lib/csrf.php';
+require_once __DIR__ . '/../src/lib/auth.php';
+
+require_login();
 
 $errors = $_SESSION['post_errors'] ?? [];
 $old = $_SESSION['post_old'] ?? [];
