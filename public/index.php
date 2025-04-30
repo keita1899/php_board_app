@@ -2,6 +2,7 @@
 session_start();
 
 require_once __DIR__ . '/../src/lib/csrf.php';
+require_once __DIR__ . '/../src/app/get_posts.php';
 
 $errors = $_SESSION['post_errors'] ?? [];
 $old = $_SESSION['post_old'] ?? [];
@@ -15,6 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
   require_once __DIR__ . '/../src/app/create_post.php';
 }
+
+$posts = get_posts();
 
 ?>
 
@@ -53,6 +56,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
   <?php endif; ?>
 
+  <div class="posts">
+    <?php if (empty($posts)): ?>
+      <p>投稿はありません</p>
+    <?php else: ?>
+      <?php foreach ($posts as $post): ?>
+        <div class="post">
+          <div class="post-header">
+            <span class="post-author"><?= htmlspecialchars($post['username']) ?></span>
+            <span class="post-date"><?= htmlspecialchars((new DateTime($post['created_at']))->format('Y/m/d H:i')) ?></span>
+          </div>
+          <div class="post-title"><?= htmlspecialchars($post['title']) ?></div>
+          <div class="post-content"><?= htmlspecialchars($post['content']) ?></div>
+          <?php if ($post['updated_at'] !== $post['created_at']): ?>
+            <div class="post-meta">
+              編集日時: <?= htmlspecialchars((new DateTime($post['updated_at']))->format('Y/m/d H:i')) ?>
+            </div>
+          <?php endif; ?>
+        </div>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </div>
 </body>
 </html>
 
