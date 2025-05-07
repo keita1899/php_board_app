@@ -30,11 +30,8 @@ $posts = get_posts();
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <?php include __DIR__ . '/../src/partials/header.php'; ?>
   <?php if (isset($_SESSION['user_id'])): ?>
-    <form action="/logout.php" method="post">
-      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
-      <input type="submit" value="ログアウト">
-    </form>
     <form action="index.php" method="post">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
       

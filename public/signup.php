@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <?php include __DIR__ . '/../src/partials/header.php'; ?>
   <h1>新規登録</h1>
 
   <form action="signup.php" method="post" class="signup-form">

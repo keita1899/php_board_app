@@ -49,6 +49,8 @@ if ($post['user_id'] !== $_SESSION['user_id']) {
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <?php include __DIR__ . '/../src/partials/header.php'; ?>
+
     <form action="edit.php" method="post">
       <input type="hidden" name="id" value="<?= htmlspecialchars($post['id']) ?>">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">

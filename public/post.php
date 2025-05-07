@@ -33,6 +33,7 @@ if (!$post) {
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <?php include __DIR__ . '/../src/partials/header.php'; ?>
     <div class="container">
         <a href="/index.php" class="back-link">← 戻る</a>
         
