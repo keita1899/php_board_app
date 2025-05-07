@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../lib/validation.php';
 
 function redirect_with_errors($location, $errors, $old_params) {
   $_SESSION['signup_errors'] = $errors;
@@ -15,21 +16,17 @@ $old_params = [
 
 $errors = [];
 
-if (empty($_POST['username'])) {
-  $errors['username'] = 'ユーザー名を入力してください。';
+if ($error = validate_username($_POST['username'])) {
+  $errors['username'] = $error;
 }
-if (empty($_POST['email'])) {
-  $errors['email'] = 'メールアドレスを入力してください。';
-} elseif (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-  $errors['email'] = '正しいメールアドレスを入力してください。';
+if ($error = validate_email($_POST['email'])) {
+  $errors['email'] = $error;
 }
-if (empty($_POST['password'])) {
-  $errors['password'] = 'パスワードを入力してください。';
-} elseif (strlen($_POST['password']) < 8) {
-  $errors['password'] = 'パスワードは8文字以上で入力してください。';
+if ($error = validate_password($_POST['password'])) {
+  $errors['password'] = $error;
 }
-if ($_POST['password'] !== ($_POST['password_confirm'] ?? '')) {
-  $errors['password_confirm'] = 'パスワードが一致しません。';
+if ($error = validate_password_confirmation($_POST['password'], $_POST['password_confirm'])) {
+  $errors['password_confirm'] = $error;
 }
 
 if ($errors) {

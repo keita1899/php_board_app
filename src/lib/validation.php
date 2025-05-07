@@ -15,3 +15,37 @@ function validate_post($post) {
 
     return $errors;
 }
+
+function validate_email($email) {
+    if (empty($email)) {
+        return 'メールアドレスを入力してください。';
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return '正しいメールアドレスを入力してください。';
+    }
+    return null;
+}
+
+function validate_password($password) {
+    if (empty($password)) {
+        return 'パスワードを入力してください。';
+    }
+    if (strlen($password) < 8) {
+        return 'パスワードは8文字以上で入力してください。';
+    }
+    return null;
+}
+
+function validate_username($username) {
+    if (empty($username)) {
+        return 'ユーザー名を入力してください。';
+    }
+    return null;
+}
+
+function validate_password_confirmation($password, $password_confirm) {
+    if ($password !== $password_confirm) {
+        return 'パスワードが一致しません。';
+    }
+    return null;
+}
