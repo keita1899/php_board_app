@@ -34,6 +34,7 @@ if (!$post) {
 </head>
 <body>
     <?php include __DIR__ . '/../src/partials/header.php'; ?>
+
     <div class="container">
         <a href="/index.php" class="back-link">← 戻る</a>
         
@@ -41,7 +42,7 @@ if (!$post) {
             <div class="post-header">
                 <span class="post-author">投稿者: <?= htmlspecialchars($post['username']) ?></span>
                 <span class="post-date">投稿日時: <?= htmlspecialchars((new DateTime($post['created_at']))->format('Y/m/d H:i')) ?></span>
-                <?php if ($_SESSION['user_id'] === $post['user_id']): ?>
+                <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] === $post['user_id']): ?>
                     <a href="edit.php?id=<?= $post['id'] ?>" class="edit-link">編集</a>
                     <form action="post.php?id=<?= $post['id'] ?>" method="post">
                         <input type="hidden" name="id" value="<?= htmlspecialchars($post['id']) ?>">
