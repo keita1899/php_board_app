@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once __DIR__ . '/../src/lib/csrf.php';
+require_once __DIR__ . '/../src/app/signup.php';
+
 $errors = $_SESSION['signup_errors'] ?? [];
 $old = $_SESSION['signup_old'] ?? [];
 unset($_SESSION['signup_errors'], $_SESSION['signup_old']);
@@ -13,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: signup.php');
     exit;
   }
-  require_once __DIR__ . '/../src/app/signup.php';
+  signup($_POST);
 }
 ?>
 

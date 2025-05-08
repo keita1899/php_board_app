@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once __DIR__ . '/../src/lib/csrf.php';
+require_once __DIR__ . '/../src/app/login.php';
+
 $errors = $_SESSION['login_errors'] ?? [];
 $old = $_SESSION['login_old'] ?? [];
 unset($_SESSION['login_errors'], $_SESSION['login_old']);
@@ -13,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: login.php');
     exit;
   }
-  require_once __DIR__ . '/../src/app/login.php';
+  login($_POST);
 }
 ?>
 

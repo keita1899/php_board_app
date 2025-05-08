@@ -63,7 +63,3 @@ function login($data) {
   header('Location: /index.php');
   exit;
 }
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  login($_POST);
-}

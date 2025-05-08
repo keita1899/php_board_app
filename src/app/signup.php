@@ -79,7 +79,3 @@ function signup($data) {
     redirect_with_errors('/signup.php', $errors, $old_params);
   }
 }
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  signup($_POST);
-}
