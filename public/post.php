@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once __DIR__ . '/../src/app/get_post.php';
 require_once __DIR__ . '/../src/lib/csrf.php';
+require_once __DIR__ . '/../src/app/post.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
@@ -17,7 +17,8 @@ if (!$post_id) {
     exit;
 }
 
-$post = get_post($post_id);
+$pdo = getPDO();
+$post = get_post($pdo, $post_id);
 if (!$post) {
     header('Location: /index.php');
     exit;
