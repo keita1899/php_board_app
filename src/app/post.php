@@ -46,3 +46,28 @@ function get_post($pdo, $post_id) {
   }
 }
 
+function delete_post($pdo, $post_id, $user_id) {
+  try {
+    $pdo->beginTransaction();
+    
+    $stmt = $pdo->prepare('SELECT user_id FROM posts WHERE id = ?');
+    $stmt->execute([$post_id]);
+    $post = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$post || $post['user_id'] !== $user_id) {
+        $pdo->rollBack();
+        return false;
+    }
+    
+    $stmt = $pdo->prepare('DELETE FROM posts WHERE id = ? AND user_id = ?');
+    $stmt->execute([$post_id, $user_id]);
+    
+    $pdo->commit();
+    return true;
+
+  } catch (PDOException $e) {
+    $pdo->rollBack();
+    error_log('Post deletion error: ' . $e->getMessage());
+    return false;
+  }
+}

@@ -8,7 +8,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: /index.php');
         exit;
     }
-    require_once __DIR__ . '/../src/app/delete_post.php';
+    $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+    if (!$post_id) {
+        header('Location: /index.php');
+        exit;
+    }
+
+    $pdo = getPDO();
+    if (delete_post($pdo, $post_id, $_SESSION['user_id'])) {
+        header('Location: /index.php');
+        exit;
+    } else {
+        $_SESSION['error'] = '投稿の削除に失敗しました。';
+        header('Location: /post.php?id=' . $post_id);
+        exit;
+    }
 }
 
 $post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
