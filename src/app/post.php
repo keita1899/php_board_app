@@ -1,10 +1,8 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 
-function get_posts() {
+function get_posts($pdo) {
   try {
-    $pdo = getPDO();
-    
     $sql = <<<SQL
       SELECT 
         posts.*,
