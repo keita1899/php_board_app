@@ -9,48 +9,77 @@ function redirect_with_errors($location, $errors, $old_params) {
   exit;
 }
 
-$old_params = [
-  'username' => $_POST['username'] ?? '',
-  'email' => $_POST['email'] ?? '',
-];
-
-$errors = [];
-
-if ($error = validate_username($_POST['username'])) {
-  $errors['username'] = $error;
-}
-if ($error = validate_email($_POST['email'])) {
-  $errors['email'] = $error;
-}
-if ($error = validate_password($_POST['password'])) {
-  $errors['password'] = $error;
-}
-if ($error = validate_password_confirmation($_POST['password'], $_POST['password_confirm'])) {
-  $errors['password_confirm'] = $error;
+function is_username_taken($pdo, $username) {
+  $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE username = ?');
+  $stmt->execute([$username]);
+  return $stmt->fetchColumn() > 0;
 }
 
-if ($errors) {
-  redirect_with_errors('/signup.php', $errors, $old_params);
+function is_email_taken($pdo, $email) {
+  $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE email = ?');
+  $stmt->execute([$email]);
+  return $stmt->fetchColumn() > 0;
 }
 
-$pdo = getPDO();
-$stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE username = ?');
-$stmt->execute([$_POST['username']]);
-if ($stmt->fetchColumn() > 0) {
-  $errors['username'] = 'このユーザー名は既に使われています。';
-  redirect_with_errors('/signup.php', $errors, $old_params);
+function validate_signup($pdo, $data) {
+  $errors = [];
+  
+  if ($error = validate_username($data['username'])) {
+    $errors['username'] = $error;
+  }
+  if ($error = validate_email($data['email'])) {
+    $errors['email'] = $error;
+  }
+  if ($error = validate_password($data['password'])) {
+    $errors['password'] = $error;
+  }
+  if ($error = validate_password_confirmation($data['password'], $data['password_confirm'])) {
+    $errors['password_confirm'] = $error;
+  }
+
+  if (empty($errors['username'])) {
+    if (is_username_taken($pdo, $data['username'])) {
+      $errors['username'] = 'このユーザー名は既に使われています。';
+    }
+  }
+  
+  if (empty($errors['email'])) {
+    if (is_email_taken($pdo, $data['email'])) {
+      $errors['email'] = 'このメールアドレスは既に使われています。';
+    }
+  }
+
+  return $errors;
 }
 
-$stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE email = ?');
-$stmt->execute([$_POST['email']]);
-if ($stmt->fetchColumn() > 0) {
-  $errors['email'] = 'このメールアドレスは既に使われています。';
-  redirect_with_errors('/signup.php', $errors, $old_params);
+function create_user($pdo, $username, $email, $password) {
+  $hash = password_hash($password, PASSWORD_DEFAULT);
+  $stmt = $pdo->prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
+  return $stmt->execute([$username, $email, $hash]);
 }
 
-$hash = password_hash($_POST['password'], PASSWORD_DEFAULT);
-$stmt = $pdo->prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
-$stmt->execute([$_POST['username'], $_POST['email'], $hash]);
+function signup($data) {
+  $old_params = [
+    'username' => $data['username'] ?? '',
+    'email' => $data['email'] ?? '',
+  ];
 
-header('Location: /login.php');
-exit;
+  $pdo = getPDO();
+
+  $errors = validate_signup($pdo, $data);
+  if ($errors) {
+    redirect_with_errors('/signup.php', $errors, $old_params);
+  }
+
+  if (create_user($pdo, $data['username'], $data['email'], $data['password'])) {
+    header('Location: /index.php');
+    exit;
+  } else {
+    $errors['form'] = 'ユーザー登録に失敗しました。もう一度お試しください。';
+    redirect_with_errors('/signup.php', $errors, $old_params);
+  }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  signup($_POST);
+}
