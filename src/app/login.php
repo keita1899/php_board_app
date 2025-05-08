@@ -9,42 +9,61 @@ function redirect_with_errors($location, $errors, $old_params) {
   exit;
 }
 
-$old_params = [
-  'email' => $_POST['email'] ?? '',
-];
-
-$errors = [];
-
-if ($error = validate_email($_POST['email'])) {
+function validate_login($data) {
+  $errors = [];
+  
+  if ($error = validate_email($data['email'])) {
     $errors['email'] = $error;
-}
-if ($error = validate_password($_POST['password'])) {
+  }
+  if ($error = validate_password($data['password'])) {
     $errors['password'] = $error;
+  }
+  
+  return $errors;
 }
 
-if ($errors) {
-  redirect_with_errors('/login.php', $errors, $old_params);
+function fetch_user_by_email($pdo, $email) {
+  $stmt = $pdo->prepare('SELECT * FROM users WHERE email = ?');
+  $stmt->execute([$email]);
+  return $stmt->fetch();
 }
 
-$pdo = getPDO();
-
-$stmt = $pdo->prepare('SELECT * FROM users WHERE email = ?');
-$stmt->execute([$_POST['email']]);
-$user = $stmt->fetch();
-
-if (!$user) {
-  $errors['form'] = 'メールアドレスまたはパスワードが間違っています。';
-  redirect_with_errors('/login.php', $errors, $old_params);
+function set_user_session($user) {
+  $_SESSION['user_id'] = $user['id'];
+  $_SESSION['username'] = $user['username'];
 }
 
-if (!password_verify($_POST['password'], $user['password'])) {
-  $errors['form'] = 'メールアドレスまたはパスワードが間違っています。';
-  redirect_with_errors('/login.php', $errors, $old_params);
+function login($data) {
+
+  $old_params = [
+    'email' => $_POST['email'] ?? '',
+  ];
+  
+  $errors = validate_login($data);
+  if ($errors) {
+    redirect_with_errors('/login.php', $errors, $old_params);
+  }
+
+  $pdo = getPDO();
+
+  $user = fetch_user_by_email($pdo, $data['email']);
+  if (!$user) {
+    $errors['form'] = 'メールアドレスまたはパスワードが間違っています。';
+    redirect_with_errors('/login.php', $errors, $old_params);
+  }
+
+  if (!password_verify($data['password'], $user['password'])) {
+    $errors['form'] = 'メールアドレスまたはパスワードが間違っています。';
+    redirect_with_errors('/login.php', $errors, $old_params);
+  }
+
+  session_regenerate_id(true);
+  set_user_session($user);
+
+  header('Location: /index.php');
+  exit;
 }
 
-session_regenerate_id(true);
-$_SESSION['user_id'] = $user['id'];
-$_SESSION['username'] = $user['username'];
-
-header('Location: /index.php');
-exit;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  login($_POST);
+}
