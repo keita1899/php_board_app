@@ -3,6 +3,7 @@ session_start();
 
 require_once __DIR__ . '/../src/lib/csrf.php';
 require_once __DIR__ . '/../src/app/post.php';
+require_once __DIR__ . '/../src/lib/validation.php';
 
 $errors = $_SESSION['post_errors'] ?? [];
 $old = $_SESSION['post_old'] ?? [];
@@ -14,7 +15,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: index.php');
     exit;
   }
-  require_once __DIR__ . '/../src/app/create_post.php';
+
+  $old_params = [
+    'title' => $_POST['title'] ?? '',
+    'content' => $_POST['content'] ?? '',
+  ];
+
+  $errors = validate_post($_POST);
+  if ($errors) {
+    $_SESSION['post_errors'] = $errors;
+    $_SESSION['post_old'] = $old_params;
+    header('Location: index.php');
+    exit;
+  }
+
+  $pdo = getPDO();
+  if (create_post($pdo, $_SESSION['user_id'], $_POST['title'], $_POST['content'])) {
+    header('Location: /index.php');
+    exit;
+  } else {
+    $_SESSION['post_errors']['form'] = '投稿の作成に失敗しました。';
+    $_SESSION['post_old'] = $old_params;
+    header('Location: index.php');
+    exit;
+  }
 }
 
 $pdo = getPDO();

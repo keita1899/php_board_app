@@ -46,6 +46,16 @@ function get_post($pdo, $post_id) {
   }
 }
 
+function create_post($pdo, $user_id, $title, $content) {
+  try {
+    $stmt = $pdo->prepare('INSERT INTO posts (user_id, title, content, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())');
+    return $stmt->execute([$user_id, $title, $content]);
+  } catch (PDOException $e) {
+    error_log('Post creation error: ' . $e->getMessage());
+    return false;
+  }
+}
+
 function delete_post($pdo, $post_id, $user_id) {
   try {
     $pdo->beginTransaction();
