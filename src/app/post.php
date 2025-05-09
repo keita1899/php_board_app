@@ -56,6 +56,16 @@ function create_post($pdo, $user_id, $title, $content) {
   }
 }
 
+function update_post($pdo, $post_id, $user_id, $title, $content) {
+  try {
+    $stmt = $pdo->prepare('UPDATE posts SET title = ?, content = ?, updated_at = NOW() WHERE id = ? AND user_id = ?');
+    return $stmt->execute([$title, $content, $post_id, $user_id]);
+  } catch (PDOException $e) {
+    error_log('Post update error: ' . $e->getMessage());
+    return false;
+  }
+}
+
 function delete_post($pdo, $post_id, $user_id) {
   try {
     $pdo->beginTransaction();

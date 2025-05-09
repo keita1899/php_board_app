@@ -3,8 +3,8 @@ session_start();
 
 require_once __DIR__ . '/../src/lib/auth.php';
 require_once __DIR__ . '/../src/lib/csrf.php';
-require_once __DIR__ . '/../src/app/get_post.php';
-
+require_once __DIR__ . '/../src/app/post.php';
+require_once __DIR__ . '/../src/lib/validation.php';
 
 require_login();
 
@@ -18,7 +18,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: index.php');
     exit;
   }
-  require_once __DIR__ . '/../src/app/update_post.php';
+
+  $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+  if (!$post_id) {
+      header('Location: /index.php');
+      exit;
+  }
+
+  $old_params = [
+      'title' => $_POST['title'] ?? '',
+      'content' => $_POST['content'] ?? '',
+  ];
+
+  $errors = validate_post($_POST);
+  if ($errors) {
+    $_SESSION['post_errors'] = $errors;
+    $_SESSION['post_old'] = $old_params;
+    header('Location: edit.php?id=' . $post_id);
+    exit;
+  }
+
+  $pdo = getPDO();
+  if (update_post($pdo, $post_id, $_SESSION['user_id'], $_POST['title'], $_POST['content'])) {
+    header('Location: /post.php?id=' . $post_id);
+    exit;
+  } else {
+    $_SESSION['post_errors']['form'] = '投稿の更新に失敗しました。';
+    $_SESSION['post_old'] = $old_params;
+    header('Location: edit.php?id=' . $post_id);
+    exit;
+  }
 }
 
 $post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -27,7 +56,8 @@ if (!$post_id) {
     exit;
 }
 
-$post = get_post($post_id);
+$pdo = getPDO();
+$post = get_post($pdo, $post_id);
 if (!$post) {
     header('Location: /index.php');
     exit;
