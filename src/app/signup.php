@@ -1,13 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../lib/validation.php';
-
-function redirect_with_errors($location, $errors, $old_params) {
-  $_SESSION['signup_errors'] = $errors;
-  $_SESSION['signup_old'] = $old_params;
-  header("Location: $location");
-  exit;
-}
+require_once __DIR__ . '/../lib/util.php';
 
 function is_username_taken($pdo, $username) {
   $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE username = ?');
@@ -59,7 +53,7 @@ function create_user($pdo, $username, $email, $password) {
 }
 
 function signup($data) {
-  $old_params = [
+  $old = [
     'username' => $data['username'] ?? '',
     'email' => $data['email'] ?? '',
   ];
@@ -68,7 +62,7 @@ function signup($data) {
 
   $errors = validate_signup($pdo, $data);
   if ($errors) {
-    redirect_with_errors('/signup.php', $errors, $old_params);
+    redirect_with_errors('/signup.php', 'signup', $errors, $old);
   }
 
   if (create_user($pdo, $data['username'], $data['email'], $data['password'])) {
@@ -76,6 +70,6 @@ function signup($data) {
     exit;
   } else {
     $errors['form'] = 'ユーザー登録に失敗しました。もう一度お試しください。';
-    redirect_with_errors('/signup.php', $errors, $old_params);
+    redirect_with_errors('/signup.php', 'signup', $errors, $old);
   }
 }

@@ -5,37 +5,34 @@ require_once __DIR__ . '/../src/lib/auth.php';
 require_once __DIR__ . '/../src/lib/csrf.php';
 require_once __DIR__ . '/../src/app/post.php';
 require_once __DIR__ . '/../src/lib/validation.php';
+require_once __DIR__ . '/../src/lib/util.php';
 
 require_login();
 
-$errors = $_SESSION['post_errors'] ?? [];
-$old = $_SESSION['post_old'] ?? [];
-unset($_SESSION['post_errors'], $_SESSION['post_old']);
+$errors = get_form_errors('post');
+$old = get_form_old('post');
+clear_form_errors('post');
+clear_form_old('post');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
-    $_SESSION['post_errors']['form'] = 'セキュリティトークンが無効です。ページを再読み込みしてください。';
-    header('Location: index.php');
-    exit;
+    redirect_with_errors('edit.php?id=' . $post_id, 'post', ['form' => 'セキュリティトークンが無効です。ページを再読み込みしてください。'], $_POST);
   }
 
-  $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
   if (!$post_id) {
       header('Location: /index.php');
       exit;
   }
 
-  $old_params = [
+  $old = [
       'title' => $_POST['title'] ?? '',
       'content' => $_POST['content'] ?? '',
   ];
 
-  $errors = validate_post($_POST);
+  $errors = validate_post($old);
   if ($errors) {
-    $_SESSION['post_errors'] = $errors;
-    $_SESSION['post_old'] = $old_params;
-    header('Location: edit.php?id=' . $post_id);
-    exit;
+    redirect_with_errors('edit.php?id=' . $post_id, 'post', $errors, $old);
   }
 
   $pdo = getPDO();
@@ -43,10 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: /post.php?id=' . $post_id);
     exit;
   } else {
-    $_SESSION['post_errors']['form'] = '投稿の更新に失敗しました。';
-    $_SESSION['post_old'] = $old_params;
-    header('Location: edit.php?id=' . $post_id);
-    exit;
+    redirect_with_errors('edit.php?id=' . $post_id, 'post', ['form' => '投稿の更新に失敗しました。'], $old);
   }
 }
 

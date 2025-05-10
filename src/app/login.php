@@ -1,13 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../lib/validation.php';
-
-function redirect_with_errors($location, $errors, $old_params) {
-  $_SESSION['login_errors'] = $errors;
-  $_SESSION['login_old'] = $old_params;
-  header("Location: $location");
-  exit;
-}
+require_once __DIR__ . '/../lib/util.php';
 
 function validate_login($data) {
   $errors = [];
@@ -35,13 +29,13 @@ function set_user_session($user) {
 
 function login($data) {
 
-  $old_params = [
-    'email' => $_POST['email'] ?? '',
+  $old = [
+    'email' => $data['email'] ?? '',
   ];
   
   $errors = validate_login($data);
   if ($errors) {
-    redirect_with_errors('/login.php', $errors, $old_params);
+    redirect_with_errors('/login.php', 'login', $errors, $old);
   }
 
   $pdo = getPDO();
@@ -49,12 +43,12 @@ function login($data) {
   $user = fetch_user_by_email($pdo, $data['email']);
   if (!$user) {
     $errors['form'] = 'メールアドレスまたはパスワードが間違っています。';
-    redirect_with_errors('/login.php', $errors, $old_params);
+    redirect_with_errors('/login.php', 'login', $errors, $old);
   }
 
   if (!password_verify($data['password'], $user['password'])) {
     $errors['form'] = 'メールアドレスまたはパスワードが間違っています。';
-    redirect_with_errors('/login.php', $errors, $old_params);
+    redirect_with_errors('/login.php', 'login', $errors, $old);
   }
 
   session_regenerate_id(true);

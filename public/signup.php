@@ -2,18 +2,23 @@
 session_start();
 require_once __DIR__ . '/../src/lib/csrf.php';
 require_once __DIR__ . '/../src/app/signup.php';
+require_once __DIR__ . '/../src/lib/util.php';
 
-$errors = $_SESSION['signup_errors'] ?? [];
-$old = $_SESSION['signup_old'] ?? [];
-unset($_SESSION['signup_errors'], $_SESSION['signup_old']);
+$errors = get_form_errors('signup');
+$old = get_form_old('signup');
+clear_form_errors('signup');
+clear_form_old('signup');
 
 $csrf_token = generate_csrf_token();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
-    $_SESSION['signup_errors']['form'] = 'セキュリティトークンが無効です。ページを再読み込みしてください。';
-    header('Location: signup.php');
-    exit;
+    redirect_with_errors(
+      'signup.php',
+      'signup',
+      ['form' => 'セキュリティトークンが無効です。ページを再読み込みしてください。'],
+      $_POST
+    );
   }
   signup($_POST);
 }

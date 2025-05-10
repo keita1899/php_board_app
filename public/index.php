@@ -4,29 +4,26 @@ session_start();
 require_once __DIR__ . '/../src/lib/csrf.php';
 require_once __DIR__ . '/../src/app/post.php';
 require_once __DIR__ . '/../src/lib/validation.php';
+require_once __DIR__ . '/../src/lib/util.php';
 
-$errors = $_SESSION['post_errors'] ?? [];
-$old = $_SESSION['post_old'] ?? [];
-unset($_SESSION['post_errors'], $_SESSION['post_old']);
+$errors = get_form_errors('post');
+$old = get_form_old('post');
+clear_form_errors('post');
+clear_form_old('post');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
-    $_SESSION['post_errors']['form'] = 'セキュリティトークンが無効です。ページを再読み込みしてください。';
-    header('Location: index.php');
-    exit;
+    redirect_with_errors('index.php', 'post', ['form' => 'セキュリティトークンが無効です。ページを再読み込みしてください。'], $_POST);
   }
 
-  $old_params = [
+  $old = [
     'title' => $_POST['title'] ?? '',
     'content' => $_POST['content'] ?? '',
   ];
 
-  $errors = validate_post($_POST);
+  $errors = validate_post($old);
   if ($errors) {
-    $_SESSION['post_errors'] = $errors;
-    $_SESSION['post_old'] = $old_params;
-    header('Location: index.php');
-    exit;
+    redirect_with_errors('index.php', 'post', $errors, $old);
   }
 
   $pdo = getPDO();
@@ -34,10 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: /index.php');
     exit;
   } else {
-    $_SESSION['post_errors']['form'] = '投稿の作成に失敗しました。';
-    $_SESSION['post_old'] = $old_params;
-    header('Location: index.php');
-    exit;
+    redirect_with_errors('index.php', 'post', ['form' => '投稿の作成に失敗しました。'], $old);
   }
 }
 
