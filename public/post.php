@@ -4,6 +4,7 @@ require_once __DIR__ . '/../src/lib/csrf.php';
 require_once __DIR__ . '/../src/app/post.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
+require_once __DIR__ . '/../src/lib/flash_message.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
@@ -17,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $pdo = getPDO();
     if (delete_post($pdo, $post_id, $_SESSION['user_id'])) {
+        set_flash_message('success', 'post_deleted');
         header('Location: /index.php');
         exit;
     } else {
@@ -48,6 +50,7 @@ if (!$post) {
 </head>
 <body>
     <?php include __DIR__ . '/../src/partials/header.php'; ?>
+    <?php include __DIR__ . '/../src/partials/flash_message.php'; ?>
 
     <div class="container">
         <a href="/index.php" class="back-link">← 戻る</a>

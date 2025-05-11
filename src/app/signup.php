@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../lib/validation.php';
 require_once __DIR__ . '/../lib/util.php';
+require_once __DIR__ . '/../config/message.php';
+require_once __DIR__ . '/../lib/flash_message.php';
 
 function is_username_taken($pdo, $username) {
   $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE username = ?');
@@ -66,6 +68,7 @@ function signup($data) {
   }
 
   if (create_user($pdo, $data['username'], $data['email'], $data['password'])) {
+    set_flash_message('success', 'signup');
     header('Location: /index.php');
     exit;
   } else {

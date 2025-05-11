@@ -7,6 +7,7 @@ require_once __DIR__ . '/../src/app/post.php';
 require_once __DIR__ . '/../src/lib/validation.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
+require_once __DIR__ . '/../src/lib/flash_message.php';
 
 require_login();
 
@@ -38,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   $pdo = getPDO();
   if (update_post($pdo, $post_id, $_SESSION['user_id'], $_POST['title'], $_POST['content'])) {
+    set_flash_message('success', 'post_updated');
     header('Location: /post.php?id=' . $post_id);
     exit;
   } else {
@@ -75,6 +77,7 @@ if ($post['user_id'] !== $_SESSION['user_id']) {
 </head>
 <body>
   <?php include __DIR__ . '/../src/partials/header.php'; ?>
+  <?php include __DIR__ . '/../src/partials/flash_message.php'; ?>
 
     <form action="edit.php" method="post">
       <input type="hidden" name="id" value="<?= htmlspecialchars($post['id']) ?>">

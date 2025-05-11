@@ -4,6 +4,7 @@ require_once __DIR__ . '/../src/lib/csrf.php';
 require_once __DIR__ . '/../src/app/login.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
+require_once __DIR__ . '/../src/lib/flash_message.php';
 
 $errors = get_form_errors('login');
 $old = get_form_old('login');
@@ -35,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
   <?php include __DIR__ . '/../src/partials/header.php'; ?>
+  <?php include __DIR__ . '/../src/partials/flash_message.php'; ?>
   <h1>ログイン</h1>
 
   <form action="login.php" method="post" class="signup-form">
