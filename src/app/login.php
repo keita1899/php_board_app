@@ -42,12 +42,12 @@ function login($data) {
 
   $user = fetch_user_by_email($pdo, $data['email']);
   if (!$user) {
-    $errors['form'] = 'メールアドレスまたはパスワードが間違っています。';
+    $errors['form'] = MESSAGES['error']['auth']['login_failed'];
     redirect_with_errors('/login.php', 'login', $errors, $old);
   }
 
   if (!password_verify($data['password'], $user['password'])) {
-    $errors['form'] = 'メールアドレスまたはパスワードが間違っています。';
+    $errors['form'] = MESSAGES['error']['auth']['login_failed'];
     redirect_with_errors('/login.php', 'login', $errors, $old);
   }
 

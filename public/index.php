@@ -5,6 +5,7 @@ require_once __DIR__ . '/../src/lib/csrf.php';
 require_once __DIR__ . '/../src/app/post.php';
 require_once __DIR__ . '/../src/lib/validation.php';
 require_once __DIR__ . '/../src/lib/util.php';
+require_once __DIR__ . '/../src/config/message.php';
 
 $errors = get_form_errors('post');
 $old = get_form_old('post');
@@ -13,7 +14,7 @@ clear_form_old('post');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
-    redirect_with_errors('index.php', 'post', ['form' => 'セキュリティトークンが無効です。ページを再読み込みしてください。'], $_POST);
+    redirect_with_errors('index.php', 'post', ['form' => MESSAGES['error']['security']['invalid_csrf']], $_POST);
   }
 
   $old = [
@@ -31,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: /index.php');
     exit;
   } else {
-    redirect_with_errors('index.php', 'post', ['form' => '投稿の作成に失敗しました。'], $old);
+    redirect_with_errors('index.php', 'post', ['form' => MESSAGES['error']['post']['create_failed']], $old);
   }
 }
 

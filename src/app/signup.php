@@ -33,13 +33,13 @@ function validate_signup($pdo, $data) {
 
   if (empty($errors['username'])) {
     if (is_username_taken($pdo, $data['username'])) {
-      $errors['username'] = 'このユーザー名は既に使われています。';
+      $errors['username'] = MESSAGES['error']['user']['username_taken'];
     }
   }
   
   if (empty($errors['email'])) {
     if (is_email_taken($pdo, $data['email'])) {
-      $errors['email'] = 'このメールアドレスは既に使われています。';
+      $errors['email'] = MESSAGES['error']['user']['email_taken'];
     }
   }
 
@@ -69,7 +69,7 @@ function signup($data) {
     header('Location: /index.php');
     exit;
   } else {
-    $errors['form'] = 'ユーザー登録に失敗しました。もう一度お試しください。';
+    $errors['form'] = MESSAGES['error']['auth']['signup_failed'];
     redirect_with_errors('/signup.php', 'signup', $errors, $old);
   }
 }

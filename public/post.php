@@ -3,11 +3,12 @@ session_start();
 require_once __DIR__ . '/../src/lib/csrf.php';
 require_once __DIR__ . '/../src/app/post.php';
 require_once __DIR__ . '/../src/lib/util.php';
+require_once __DIR__ . '/../src/config/message.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
     if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
-        redirect_with_errors('post.php?id=' . $post_id, 'post', ['form' => 'セキュリティトークンが無効です。ページを再読み込みしてください。'], $_POST);
+        redirect_with_errors('post.php?id=' . $post_id, 'post', ['form' => MESSAGES['error']['security']['invalid_csrf']], $_POST);
     }
     if (!$post_id) {
         header('Location: /index.php');
@@ -19,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: /index.php');
         exit;
     } else {
-        redirect_with_errors('post.php?id=' . $post_id, 'post', ['form' => '投稿の削除に失敗しました。'], $_POST);
+        redirect_with_errors('post.php?id=' . $post_id, 'post', ['form' => MESSAGES['error']['post']['delete_failed']], $_POST);
     }
 }
 
