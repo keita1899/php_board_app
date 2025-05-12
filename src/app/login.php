@@ -44,19 +44,18 @@ function login($data) {
 
   $user = fetch_user_by_email($pdo, $data['email']);
   if (!$user) {
-    $errors['form'] = MESSAGES['error']['auth']['login_failed'];
+    set_flash_message('error', 'auth', 'login_failed');
     redirect_with_errors('/login.php', 'login', $errors, $old);
   }
 
   if (!password_verify($data['password'], $user['password'])) {
-    $errors['form'] = MESSAGES['error']['auth']['login_failed'];
+    set_flash_message('error', 'auth', 'login_failed');
     redirect_with_errors('/login.php', 'login', $errors, $old);
   }
 
   session_regenerate_id(true);
   set_user_session($user);
-  set_flash_message('success', 'login');
+  set_flash_message('success', 'auth', 'login');
 
-  header('Location: /index.php');
-  exit;
+  redirect('index.php');
 }

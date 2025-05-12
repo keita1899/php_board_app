@@ -9,34 +9,32 @@ require_once __DIR__ . '/../src/lib/flash_message.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
     if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
-        redirect_with_errors('post.php?id=' . $post_id, 'post', ['form' => MESSAGES['error']['security']['invalid_csrf']], $_POST);
+        set_flash_message('error', 'security', 'invalid_csrf');
+        redirect('post.php?id=' . $post_id);
     }
     if (!$post_id) {
-        header('Location: /index.php');
-        exit;
+        redirect('index.php');
     }
 
     $pdo = getPDO();
     if (delete_post($pdo, $post_id, $_SESSION['user_id'])) {
-        set_flash_message('success', 'post_deleted');
-        header('Location: /index.php');
-        exit;
+        set_flash_message('success', 'post', 'deleted');
+        redirect('index.php');
     } else {
-        redirect_with_errors('post.php?id=' . $post_id, 'post', ['form' => MESSAGES['error']['post']['delete_failed']], $_POST);
+        set_flash_message('error', 'post', 'delete_failed');
+        redirect_with_errors('post.php?id=' . $post_id, 'post', $errors, $_POST);
     }
 }
 
 $post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$post_id) {
-    header('Location: /index.php');
-    exit;
+    redirect('index.php');
 }
 
 $pdo = getPDO();
 $post = get_post($pdo, $post_id);
 if (!$post) {
-    header('Location: /index.php');
-    exit;
+    redirect('index.php');
 }
 ?>
 

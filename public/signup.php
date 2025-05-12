@@ -14,12 +14,8 @@ $csrf_token = generate_csrf_token();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
-    redirect_with_errors(
-      'signup.php',
-      'signup',
-      ['form' => MESSAGES['error']['security']['invalid_csrf']],
-      $_POST
-    );
+    set_flash_message('error', 'security', 'invalid_csrf');
+    redirect('signup.php');
   }
   signup($_POST);
 }

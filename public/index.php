@@ -15,7 +15,8 @@ clear_form_old('post');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
-    redirect_with_errors('index.php', 'post', ['form' => MESSAGES['error']['security']['invalid_csrf']], $_POST);
+    set_flash_message('error', 'security', 'invalid_csrf');
+    redirect('index.php');
   }
 
   $old = [
@@ -30,11 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   $pdo = getPDO();
   if (create_post($pdo, $_SESSION['user_id'], $_POST['title'], $_POST['content'])) {
-    set_flash_message('success', 'post_created');
-    header('Location: /index.php');
-    exit;
+    set_flash_message('success', 'post', 'created');
+    redirect('index.php');
   } else {
-    redirect_with_errors('index.php', 'post', ['form' => MESSAGES['error']['post']['create_failed']], $old);
+    set_flash_message('error', 'post', 'create_failed');
+    redirect_with_errors('index.php', 'post', $errors, $old);
   }
 }
 

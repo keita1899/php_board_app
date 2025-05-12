@@ -68,11 +68,10 @@ function signup($data) {
   }
 
   if (create_user($pdo, $data['username'], $data['email'], $data['password'])) {
-    set_flash_message('success', 'signup');
-    header('Location: /index.php');
-    exit;
+    set_flash_message('success', 'auth', 'signup');
+    redirect('index.php');
   } else {
-    $errors['form'] = MESSAGES['error']['auth']['signup_failed'];
+    set_flash_message('error', 'auth', 'signup_failed');
     redirect_with_errors('/signup.php', 'signup', $errors, $old);
   }
 }
