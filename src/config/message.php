@@ -39,6 +39,7 @@ const MESSAGES = [
     ],
     'post' => [
       'not_found' => '投稿が見つかりません。',
+      'not_owner' => 'この投稿の編集は許可されていません。',
       'create_failed' => '投稿の作成に失敗しました。',
       'update_failed' => '投稿の更新に失敗しました。',
       'delete_failed' => '投稿の削除に失敗しました。',

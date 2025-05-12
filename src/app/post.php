@@ -91,3 +91,7 @@ function delete_post($pdo, $post_id, $user_id) {
     return false;
   }
 }
+
+function is_post_owner($owner_id, $current_user_id) {
+  return $owner_id === $current_user_id;
+}

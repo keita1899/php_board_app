@@ -11,13 +11,36 @@ require_once __DIR__ . '/../src/lib/flash_message.php';
 
 require_login();
 
+$pdo = getPDO();
+
 $errors = get_form_errors('post');
 $old = get_form_old('post');
 clear_form_errors('post');
 clear_form_old('post');
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+  $post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?? null;
+  if (!$post_id) {
+    set_flash_message('error', 'post', 'not_found');
+    redirect('index.php');
+  }
+
+  $post = get_post($pdo, $post_id);
+  if (!$post) {
+    set_flash_message('error', 'post', 'not_found');
+    redirect('index.php');
+  }
+
+  if (!is_post_owner($post['user_id'], $_SESSION['user_id'])) {
+    set_flash_message('error', 'post', 'not_owner');
+    redirect('index.php');
+  }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+  require_login();
+
+  $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? null;
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
     set_flash_message('error', 'security', 'invalid_csrf');
     redirect('edit.php?id=' . $post_id);
@@ -37,7 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect_with_errors('edit.php?id=' . $post_id, 'post', $errors, $old);
   }
 
-  $pdo = getPDO();
   if (update_post($pdo, $post_id, $_SESSION['user_id'], $_POST['title'], $_POST['content'])) {
     set_flash_message('success', 'post', 'updated');
     redirect('post.php?id=' . $post_id);
@@ -45,21 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     set_flash_message('error', 'post', 'update_failed');
     redirect_with_errors('edit.php?id=' . $post_id, 'post', $errors, $old);
   }
-}
-
-$post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-if (!$post_id) {
-    redirect('index.php');
-}
-
-$pdo = getPDO();
-$post = get_post($pdo, $post_id);
-if (!$post) {
-    redirect('index.php');
-}
-
-if ($post['user_id'] !== $_SESSION['user_id']) {
-    redirect('index.php');
 }
 
 ?>

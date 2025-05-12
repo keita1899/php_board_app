@@ -5,18 +5,50 @@ require_once __DIR__ . '/../src/app/post.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
 require_once __DIR__ . '/../src/lib/flash_message.php';
+require_once __DIR__ . '/../src/lib/auth.php';
+
+$pdo = getPDO();
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?? null;
+    if (!$post_id) {
+        set_flash_message('error', 'post', 'not_found');
+        redirect('index.php');
+    }
+
+    $post = get_post($pdo, $post_id);
+    if (!$post) {
+        set_flash_message('error', 'post', 'not_found');
+        redirect('index.php');
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+    require_login();
+
+    $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? null;
+
     if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
         set_flash_message('error', 'security', 'invalid_csrf');
         redirect('post.php?id=' . $post_id);
     }
+
     if (!$post_id) {
+        set_flash_message('error', 'post', 'not_found');
         redirect('index.php');
     }
 
-    $pdo = getPDO();
+    $post = get_post($pdo, $post_id);
+    if (!$post) {
+        set_flash_message('error', 'post', 'not_found');
+        redirect('index.php');
+    }
+
+    if (!is_post_owner($post['user_id'], $_SESSION['user_id'])) {
+        set_flash_message('error', 'post', 'not_owner');
+        redirect('index.php');
+    }
+
     if (delete_post($pdo, $post_id, $_SESSION['user_id'])) {
         set_flash_message('success', 'post', 'deleted');
         redirect('index.php');
@@ -26,16 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-if (!$post_id) {
-    redirect('index.php');
-}
-
-$pdo = getPDO();
-$post = get_post($pdo, $post_id);
-if (!$post) {
-    redirect('index.php');
-}
 ?>
 
 <!DOCTYPE html>

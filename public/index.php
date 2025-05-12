@@ -13,6 +13,12 @@ $old = get_form_old('post');
 clear_form_errors('post');
 clear_form_old('post');
 
+$pdo = getPDO();
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+  $posts = get_posts($pdo);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
     set_flash_message('error', 'security', 'invalid_csrf');
@@ -29,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect_with_errors('index.php', 'post', $errors, $old);
   }
 
-  $pdo = getPDO();
   if (create_post($pdo, $_SESSION['user_id'], $_POST['title'], $_POST['content'])) {
     set_flash_message('success', 'post', 'created');
     redirect('index.php');
@@ -38,9 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect_with_errors('index.php', 'post', $errors, $old);
   }
 }
-
-$pdo = getPDO();
-$posts = get_posts($pdo);
 
 ?>
 
