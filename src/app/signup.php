@@ -50,10 +50,17 @@ function validate_signup($pdo, $data) {
 }
 
 function create_user($pdo, $username, $email, $password) {
-  $hash = password_hash($password, PASSWORD_DEFAULT);
-  $stmt = $pdo->prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
-  $stmt->execute([$username, $email, $hash]);
-  return $pdo->lastInsertId();
+  try {
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+    $stmt = $pdo->prepare(
+      'INSERT INTO users (username, email, password) VALUES (?, ?, ?)'
+    );
+    $stmt->execute([$username, $email, $hash]);
+    return $pdo->lastInsertId();
+  } catch (PDOException $e) {
+    error_log('User insert error: ' . $e->getMessage());
+    return null;
+  }
 }
 
 function signup($data) {
