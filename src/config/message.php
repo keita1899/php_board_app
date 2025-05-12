@@ -2,15 +2,21 @@
 
 const MESSAGES = [
   'success' => [
-    'post_created' => '投稿を作成しました。',
-    'post_updated' => '投稿を更新しました。',
-    'post_deleted' => '投稿を削除しました。',
-    'user_created' => 'アカウントを作成しました。',
-    'user_updated' => 'アカウントを更新しました。',
-    'user_deleted' => 'アカウントを削除しました。',
-    'logout' => 'ログアウトしました。',
-    'login' => 'ログインしました。',
-    'signup' => '新規登録が完了しました。',
+    'auth' => [
+      'login' => 'ログインしました。',
+      'logout' => 'ログアウトしました。',
+      'signup' => '新規登録が完了しました。',
+    ],
+    'post' => [
+      'created' => '投稿を作成しました。',
+      'updated' => '投稿を更新しました。',
+      'deleted' => '投稿を削除しました。',
+    ],
+    'user' => [
+      'created' => 'アカウントを作成しました。',
+      'updated' => 'アカウントを更新しました。',
+      'deleted' => 'アカウントを削除しました。',
+    ],
   ],
   'error' => [
     'auth' => [
