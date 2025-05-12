@@ -1,27 +1,63 @@
 <?php
 session_start();
-require_once __DIR__ . '/../src/app/get_post.php';
 require_once __DIR__ . '/../src/lib/csrf.php';
+require_once __DIR__ . '/../src/app/post.php';
+require_once __DIR__ . '/../src/lib/util.php';
+require_once __DIR__ . '/../src/config/message.php';
+require_once __DIR__ . '/../src/lib/flash_message.php';
+require_once __DIR__ . '/../src/lib/auth.php';
+
+$pdo = getPDO();
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?? null;
+    if (!$post_id) {
+        set_flash_message('error', 'post', 'not_found');
+        redirect('index.php');
+    }
+
+    $post = get_post($pdo, $post_id);
+    if (!$post) {
+        set_flash_message('error', 'post', 'not_found');
+        redirect('index.php');
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_login();
+
+    $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? null;
+
     if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
-        header('Location: /index.php');
-        exit;
+        set_flash_message('error', 'security', 'invalid_csrf');
+        redirect('post.php?id=' . $post_id);
     }
-    require_once __DIR__ . '/../src/app/delete_post.php';
+
+    if (!$post_id) {
+        set_flash_message('error', 'post', 'not_found');
+        redirect('index.php');
+    }
+
+    $post = get_post($pdo, $post_id);
+    if (!$post) {
+        set_flash_message('error', 'post', 'not_found');
+        redirect('index.php');
+    }
+
+    if (!is_post_owner($post['user_id'], $_SESSION['user_id'])) {
+        set_flash_message('error', 'post', 'not_owner');
+        redirect('index.php');
+    }
+
+    if (delete_post($pdo, $post_id, $_SESSION['user_id'])) {
+        set_flash_message('success', 'post', 'deleted');
+        redirect('index.php');
+    } else {
+        set_flash_message('error', 'post', 'delete_failed');
+        redirect_with_errors('post.php?id=' . $post_id, 'post', $errors, $_POST);
+    }
 }
 
-$post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-if (!$post_id) {
-    header('Location: /index.php');
-    exit;
-}
-
-$post = get_post($post_id);
-if (!$post) {
-    header('Location: /index.php');
-    exit;
-}
 ?>
 
 <!DOCTYPE html>
@@ -33,6 +69,9 @@ if (!$post) {
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <?php include __DIR__ . '/../src/partials/header.php'; ?>
+    <?php include __DIR__ . '/../src/partials/flash_message.php'; ?>
+
     <div class="container">
         <a href="/index.php" class="back-link">← 戻る</a>
         
@@ -40,7 +79,7 @@ if (!$post) {
             <div class="post-header">
                 <span class="post-author">投稿者: <?= htmlspecialchars($post['username']) ?></span>
                 <span class="post-date">投稿日時: <?= htmlspecialchars((new DateTime($post['created_at']))->format('Y/m/d H:i')) ?></span>
-                <?php if ($_SESSION['user_id'] === $post['user_id']): ?>
+                <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] === $post['user_id']): ?>
                     <a href="edit.php?id=<?= $post['id'] ?>" class="edit-link">編集</a>
                     <form action="post.php?id=<?= $post['id'] ?>" method="post">
                         <input type="hidden" name="id" value="<?= htmlspecialchars($post['id']) ?>">

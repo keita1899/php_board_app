@@ -1,19 +1,22 @@
 <?php
 session_start();
 require_once __DIR__ . '/../src/lib/csrf.php';
-$errors = $_SESSION['login_errors'] ?? [];
-$old = $_SESSION['login_old'] ?? [];
-unset($_SESSION['login_errors'], $_SESSION['login_old']);
+require_once __DIR__ . '/../src/app/login.php';
+require_once __DIR__ . '/../src/lib/util.php';
+require_once __DIR__ . '/../src/config/message.php';
+require_once __DIR__ . '/../src/lib/flash_message.php';
 
-$csrf_token = generate_csrf_token();
+$errors = get_form_errors('login');
+$old = get_form_old('login');
+clear_form_errors('login');
+clear_form_old('login');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
-    $_SESSION['login_errors']['form'] = 'セキュリティトークンが無効です。ページを再読み込みしてください。';
-    header('Location: login.php');
-    exit;
+    set_flash_message('error', 'security', 'invalid_csrf');
+    redirect('login.php');
   }
-  require_once __DIR__ . '/../src/app/login.php';
+  login($_POST);
 }
 ?>
 
@@ -26,10 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <?php include __DIR__ . '/../src/partials/header.php'; ?>
+  <?php include __DIR__ . '/../src/partials/flash_message.php'; ?>
   <h1>ログイン</h1>
 
   <form action="login.php" method="post" class="signup-form">
-    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
     <?php $name = 'form'; include __DIR__ . '/../src/partials/error_message.php'; ?>
     <div class="form-group">
       <label for="email">メールアドレス</label>

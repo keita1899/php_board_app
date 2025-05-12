@@ -3,39 +3,70 @@ session_start();
 
 require_once __DIR__ . '/../src/lib/auth.php';
 require_once __DIR__ . '/../src/lib/csrf.php';
-require_once __DIR__ . '/../src/app/get_post.php';
-
+require_once __DIR__ . '/../src/app/post.php';
+require_once __DIR__ . '/../src/lib/validation.php';
+require_once __DIR__ . '/../src/lib/util.php';
+require_once __DIR__ . '/../src/config/message.php';
+require_once __DIR__ . '/../src/lib/flash_message.php';
 
 require_login();
 
-$errors = $_SESSION['post_errors'] ?? [];
-$old = $_SESSION['post_old'] ?? [];
-unset($_SESSION['post_errors'], $_SESSION['post_old']);
+$pdo = getPDO();
+
+$errors = get_form_errors('post');
+$old = get_form_old('post');
+clear_form_errors('post');
+clear_form_old('post');
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+  $post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?? null;
+  if (!$post_id) {
+    set_flash_message('error', 'post', 'not_found');
+    redirect('index.php');
+  }
+
+  $post = get_post($pdo, $post_id);
+  if (!$post) {
+    set_flash_message('error', 'post', 'not_found');
+    redirect('index.php');
+  }
+
+  if (!is_post_owner($post['user_id'], $_SESSION['user_id'])) {
+    set_flash_message('error', 'post', 'not_owner');
+    redirect('index.php');
+  }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  require_login();
+
+  $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? null;
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
-    $_SESSION['post_errors']['form'] = 'セキュリティトークンが無効です。ページを再読み込みしてください。';
-    header('Location: index.php');
-    exit;
+    set_flash_message('error', 'security', 'invalid_csrf');
+    redirect('edit.php?id=' . $post_id);
   }
-  require_once __DIR__ . '/../src/app/update_post.php';
-}
 
-$post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-if (!$post_id) {
-    header('Location: /index.php');
-    exit;
-}
+  if (!$post_id) {
+    redirect('index.php');
+  }
 
-$post = get_post($post_id);
-if (!$post) {
-    header('Location: /index.php');
-    exit;
-}
+  $old = [
+      'title' => $_POST['title'] ?? '',
+      'content' => $_POST['content'] ?? '',
+  ];
 
-if ($post['user_id'] !== $_SESSION['user_id']) {
-    header('Location: /index.php');
-    exit;
+  $errors = validate_post($old);
+  if ($errors) {
+    redirect_with_errors('edit.php?id=' . $post_id, 'post', $errors, $old);
+  }
+
+  if (update_post($pdo, $post_id, $_SESSION['user_id'], $_POST['title'], $_POST['content'])) {
+    set_flash_message('success', 'post', 'updated');
+    redirect('post.php?id=' . $post_id);
+  } else {
+    set_flash_message('error', 'post', 'update_failed');
+    redirect_with_errors('edit.php?id=' . $post_id, 'post', $errors, $old);
+  }
 }
 
 ?>
@@ -49,6 +80,9 @@ if ($post['user_id'] !== $_SESSION['user_id']) {
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <?php include __DIR__ . '/../src/partials/header.php'; ?>
+  <?php include __DIR__ . '/../src/partials/flash_message.php'; ?>
+
     <form action="edit.php" method="post">
       <input type="hidden" name="id" value="<?= htmlspecialchars($post['id']) ?>">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">

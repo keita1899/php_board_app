@@ -2,22 +2,47 @@
 session_start();
 
 require_once __DIR__ . '/../src/lib/csrf.php';
-require_once __DIR__ . '/../src/app/get_posts.php';
+require_once __DIR__ . '/../src/app/post.php';
+require_once __DIR__ . '/../src/lib/validation.php';
+require_once __DIR__ . '/../src/lib/util.php';
+require_once __DIR__ . '/../src/config/message.php';
+require_once __DIR__ . '/../src/lib/flash_message.php';
 
-$errors = $_SESSION['post_errors'] ?? [];
-$old = $_SESSION['post_old'] ?? [];
-unset($_SESSION['post_errors'], $_SESSION['post_old']);
+$errors = get_form_errors('post');
+$old = get_form_old('post');
+clear_form_errors('post');
+clear_form_old('post');
+
+$pdo = getPDO();
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+  $posts = get_posts($pdo);
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
-    $_SESSION['post_errors']['form'] = 'セキュリティトークンが無効です。ページを再読み込みしてください。';
-    header('Location: index.php');
-    exit;
+    set_flash_message('error', 'security', 'invalid_csrf');
+    redirect('index.php');
   }
-  require_once __DIR__ . '/../src/app/create_post.php';
-}
 
-$posts = get_posts();
+  $old = [
+    'title' => $_POST['title'] ?? '',
+    'content' => $_POST['content'] ?? '',
+  ];
+
+  $errors = validate_post($old);
+  if ($errors) {
+    redirect_with_errors('index.php', 'post', $errors, $old);
+  }
+
+  if (create_post($pdo, $_SESSION['user_id'], $_POST['title'], $_POST['content'])) {
+    set_flash_message('success', 'post', 'created');
+    redirect('index.php');
+  } else {
+    set_flash_message('error', 'post', 'create_failed');
+    redirect_with_errors('index.php', 'post', $errors, $old);
+  }
+}
 
 ?>
 
@@ -30,11 +55,10 @@ $posts = get_posts();
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <?php include __DIR__ . '/../src/partials/header.php'; ?>
+  <?php include __DIR__ . '/../src/partials/flash_message.php'; ?>
+
   <?php if (isset($_SESSION['user_id'])): ?>
-    <form action="/logout.php" method="post">
-      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
-      <input type="submit" value="ログアウト">
-    </form>
     <form action="index.php" method="post">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
       

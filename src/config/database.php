@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../config/message.php';
+
 function getPDO() {
     $host = getenv('DB_HOST') ?: 'db';
     $dbname = getenv('DB_NAME') ?: 'board_app';
@@ -13,6 +15,6 @@ function getPDO() {
         return $pdo;
     } catch (PDOException $e) {
         error_log('Database connection error: ' . $e->getMessage());
-        exit('データベース接続エラーが発生しました。管理者にお問い合わせください。');
+        exit(MESSAGES['error']['database']['connection_error']);
     }
 }

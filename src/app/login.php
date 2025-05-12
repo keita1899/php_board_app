@@ -1,53 +1,57 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/message.php';
+require_once __DIR__ . '/../lib/validation.php';
+require_once __DIR__ . '/../lib/util.php';
+require_once __DIR__ . '/../lib/flash_message.php';
+require_once __DIR__ . '/../lib/auth.php';
 
-function redirect_with_errors($location, $errors, $old_params) {
-  $_SESSION['login_errors'] = $errors;
-  $_SESSION['login_old'] = $old_params;
-  header("Location: $location");
-  exit;
+function validate_login($data) {
+  $errors = [];
+  
+  if ($error = validate_email($data['email'])) {
+    $errors['email'] = $error;
+  }
+  if ($error = validate_password($data['password'])) {
+    $errors['password'] = $error;
+  }
+  
+  return $errors;
 }
 
-$old_params = [
-  'email' => $_POST['email'] ?? '',
-];
-
-$errors = [];
-
-if (empty($_POST['email'])) {
-  $errors['email'] = 'メールアドレスを入力してください。';
-} elseif (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-  $errors['email'] = '正しいメールアドレスを入力してください。';
-}
-if (empty($_POST['password'])) {
-  $errors['password'] = 'パスワードを入力してください。';
-} elseif (strlen($_POST['password']) < 8) {
-  $errors['password'] = 'パスワードは8文字以上で入力してください。';
+function fetch_user_by_email($pdo, $email) {
+  $stmt = $pdo->prepare('SELECT * FROM users WHERE email = ?');
+  $stmt->execute([$email]);
+  return $stmt->fetch();
 }
 
-if ($errors) {
-  redirect_with_errors('/login.php', $errors, $old_params);
+function login($data) {
+
+  $old = [
+    'email' => $data['email'] ?? '',
+  ];
+  
+  $errors = validate_login($data);
+  if ($errors) {
+    redirect_with_errors('/login.php', 'login', $errors, $old);
+  }
+
+  $pdo = getPDO();
+
+  $user = fetch_user_by_email($pdo, $data['email']);
+  if (!$user) {
+    set_flash_message('error', 'auth', 'login_failed');
+    redirect_with_errors('/login.php', 'login', $errors, $old);
+  }
+
+  if (!password_verify($data['password'], $user['password'])) {
+    set_flash_message('error', 'auth', 'login_failed');
+    redirect_with_errors('/login.php', 'login', $errors, $old);
+  }
+
+  set_login_session($user['id']);
+
+  set_flash_message('success', 'auth', 'login');
+
+  redirect('index.php');
 }
-
-$pdo = getPDO();
-
-$stmt = $pdo->prepare('SELECT * FROM users WHERE email = ?');
-$stmt->execute([$_POST['email']]);
-$user = $stmt->fetch();
-
-if (!$user) {
-  $errors['form'] = 'メールアドレスまたはパスワードが間違っています。';
-  redirect_with_errors('/login.php', $errors, $old_params);
-}
-
-if (!password_verify($_POST['password'], $user['password'])) {
-  $errors['form'] = 'メールアドレスまたはパスワードが間違っています。';
-  redirect_with_errors('/login.php', $errors, $old_params);
-}
-
-session_regenerate_id(true);
-$_SESSION['user_id'] = $user['id'];
-$_SESSION['username'] = $user['username'];
-
-header('Location: /index.php');
-exit;
