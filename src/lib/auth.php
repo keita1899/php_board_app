@@ -13,6 +13,11 @@ function require_login() {
   }
 }
 
+function set_login_session($user_id) {
+  session_regenerate_id(true);
+  $_SESSION['user_id'] = $user_id;
+}
+
 function logout() {
   $_SESSION = array();
 

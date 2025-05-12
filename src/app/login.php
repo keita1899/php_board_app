@@ -4,6 +4,7 @@ require_once __DIR__ . '/../config/message.php';
 require_once __DIR__ . '/../lib/validation.php';
 require_once __DIR__ . '/../lib/util.php';
 require_once __DIR__ . '/../lib/flash_message.php';
+require_once __DIR__ . '/../lib/auth.php';
 
 function validate_login($data) {
   $errors = [];
@@ -22,11 +23,6 @@ function fetch_user_by_email($pdo, $email) {
   $stmt = $pdo->prepare('SELECT * FROM users WHERE email = ?');
   $stmt->execute([$email]);
   return $stmt->fetch();
-}
-
-function set_user_session($user) {
-  $_SESSION['user_id'] = $user['id'];
-  $_SESSION['username'] = $user['username'];
 }
 
 function login($data) {
@@ -53,8 +49,8 @@ function login($data) {
     redirect_with_errors('/login.php', 'login', $errors, $old);
   }
 
-  session_regenerate_id(true);
-  set_user_session($user);
+  set_login_session($user['id']);
+
   set_flash_message('success', 'auth', 'login');
 
   redirect('index.php');

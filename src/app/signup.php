@@ -4,6 +4,7 @@ require_once __DIR__ . '/../lib/validation.php';
 require_once __DIR__ . '/../lib/util.php';
 require_once __DIR__ . '/../config/message.php';
 require_once __DIR__ . '/../lib/flash_message.php';
+require_once __DIR__ . '/../lib/auth.php';
 
 function is_username_taken($pdo, $username) {
   $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE username = ?');
@@ -51,7 +52,8 @@ function validate_signup($pdo, $data) {
 function create_user($pdo, $username, $email, $password) {
   $hash = password_hash($password, PASSWORD_DEFAULT);
   $stmt = $pdo->prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
-  return $stmt->execute([$username, $email, $hash]);
+  $stmt->execute([$username, $email, $hash]);
+  return $pdo->lastInsertId();
 }
 
 function signup($data) {
@@ -67,7 +69,10 @@ function signup($data) {
     redirect_with_errors('/signup.php', 'signup', $errors, $old);
   }
 
-  if (create_user($pdo, $data['username'], $data['email'], $data['password'])) {
+  $user_id = create_user($pdo, $data['username'], $data['email'], $data['password']);
+
+  if ($user_id) {
+    set_login_session($user_id);
     set_flash_message('success', 'auth', 'signup');
     redirect('index.php');
   } else {
