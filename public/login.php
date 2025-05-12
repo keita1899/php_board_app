@@ -11,8 +11,6 @@ $old = get_form_old('login');
 clear_form_errors('login');
 clear_form_old('login');
 
-$csrf_token = generate_csrf_token();
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
     set_flash_message('error', 'security', 'invalid_csrf');
@@ -36,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <h1>ログイン</h1>
 
   <form action="login.php" method="post" class="signup-form">
-    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
     <?php $name = 'form'; include __DIR__ . '/../src/partials/error_message.php'; ?>
     <div class="form-group">
       <label for="email">メールアドレス</label>
