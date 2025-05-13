@@ -36,21 +36,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <form action="signup.php" method="post" class="signup-form">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
     <div class="form-group">
-      <label for="email">メールアドレス</label>
-      <input type="email" id="email" name="email" placeholder="メールアドレス" value="<?= htmlspecialchars($old['email'] ?? '') ?>">
-      <?php $name = 'email'; include __DIR__ . '/../src/partials/error_message.php'; ?>
+      氏名
+      <label for="last_name">姓</label>
+      <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($old['last_name'] ?? '') ?>">
+      <label for="first_name">名</label>
+      <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($old['first_name'] ?? '') ?>">
+      <?php $name = 'last_name'; include __DIR__ . '/../src/partials/error_message.php'; ?>
+      <?php $name = 'first_name'; include __DIR__ . '/../src/partials/error_message.php'; ?>
+    </div>
+    <div class="form-group">
+      性別
+      <input type="radio" id="male" name="gender" value="male" <?= ($old['gender'] ?? '') === 'male' ? 'checked' : '' ?>>
+      <label for="male">男性</label>
+      <input type="radio" id="female" name="gender" value="female" <?= ($old['gender'] ?? '') === 'female' ? 'checked' : '' ?>>
+      <label for="female">女性</label>
+      <?php $name = 'gender'; include __DIR__ . '/../src/partials/error_message.php'; ?>
+    </div>
+    <div class="form-group">
+      住所
+      <?php include __DIR__ . '/../src/partials/prefecture_select.php'; ?>
+      <div>
+        <label for="address">それ以降の住所</label>
+        <input type="text" id="address" name="address" value="<?= htmlspecialchars($old['address'] ?? '') ?>">
+        <?php $name = 'address'; include __DIR__ . '/../src/partials/error_message.php'; ?>
+      </div>
     </div>
     <div class="form-group">
       <label for="password">パスワード</label>
-      <input type="password" id="password" name="password" placeholder="パスワード">
+      <input type="password" id="password" name="password" value="<?= htmlspecialchars($old['password'] ?? '') ?>">
       <?php $name = 'password'; include __DIR__ . '/../src/partials/error_message.php'; ?>
     </div>
     <div class="form-group">
       <label for="password_confirm">パスワード確認</label>
-      <input type="password" id="password_confirm" name="password_confirm" placeholder="パスワード確認">
+      <input type="password" id="password_confirm" name="password_confirm" value="<?= htmlspecialchars($old['password_confirm'] ?? '') ?>">
       <?php $name = 'password_confirm'; include __DIR__ . '/../src/partials/error_message.php'; ?>
     </div>
-    <input type="submit" value="新規登録" class="submit-btn">
+    <div class="form-group">
+      <label for="email">メールアドレス</label>
+      <input type="email" id="email" name="email" value="<?= htmlspecialchars($old['email'] ?? '') ?>">
+      <?php $name = 'email'; include __DIR__ . '/../src/partials/error_message.php'; ?>
+    </div>
+    <input type="submit" value="確認画面へ" class="submit-btn">
   </form>
 </body>
 </html>
