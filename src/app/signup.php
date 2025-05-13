@@ -6,12 +6,6 @@ require_once __DIR__ . '/../config/message.php';
 require_once __DIR__ . '/../lib/flash_message.php';
 require_once __DIR__ . '/../lib/auth.php';
 
-function is_username_taken($pdo, $username) {
-  $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE username = ?');
-  $stmt->execute([$username]);
-  return $stmt->fetchColumn() > 0;
-}
-
 function is_email_taken($pdo, $email) {
   $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE email = ?');
   $stmt->execute([$email]);
@@ -21,9 +15,6 @@ function is_email_taken($pdo, $email) {
 function validate_signup($pdo, $data) {
   $errors = [];
   
-  if ($error = validate_username($data['username'])) {
-    $errors['username'] = $error;
-  }
   if ($error = validate_email($data['email'])) {
     $errors['email'] = $error;
   }
@@ -34,12 +25,6 @@ function validate_signup($pdo, $data) {
     $errors['password_confirm'] = $error;
   }
 
-  if (empty($errors['username'])) {
-    if (is_username_taken($pdo, $data['username'])) {
-      $errors['username'] = MESSAGES['error']['user']['username_taken'];
-    }
-  }
-  
   if (empty($errors['email'])) {
     if (is_email_taken($pdo, $data['email'])) {
       $errors['email'] = MESSAGES['error']['user']['email_taken'];
@@ -49,13 +34,13 @@ function validate_signup($pdo, $data) {
   return $errors;
 }
 
-function create_user($pdo, $username, $email, $password) {
+function create_user($pdo, $email, $password) {
   try {
     $hash = password_hash($password, PASSWORD_DEFAULT);
     $stmt = $pdo->prepare(
-      'INSERT INTO users (username, email, password) VALUES (?, ?, ?)'
+      'INSERT INTO users (email, password) VALUES (?, ?)'
     );
-    $stmt->execute([$username, $email, $hash]);
+    $stmt->execute([$email, $hash]);
     return $pdo->lastInsertId();
   } catch (PDOException $e) {
     error_log('User insert error: ' . $e->getMessage());
@@ -65,7 +50,6 @@ function create_user($pdo, $username, $email, $password) {
 
 function signup($data) {
   $old = [
-    'username' => $data['username'] ?? '',
     'email' => $data['email'] ?? '',
   ];
 
@@ -76,7 +60,7 @@ function signup($data) {
     redirect_with_errors('/signup.php', 'signup', $errors, $old);
   }
 
-  $user_id = create_user($pdo, $data['username'], $data['email'], $data['password']);
+  $user_id = create_user($pdo, $data['email'], $data['password']);
 
   if ($user_id) {
     set_login_session($user_id);

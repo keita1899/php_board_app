@@ -77,7 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         <div class="post">
             <div class="post-header">
-                <span class="post-author">投稿者: <?= htmlspecialchars($post['username']) ?></span>
                 <span class="post-date">投稿日時: <?= htmlspecialchars((new DateTime($post['created_at']))->format('Y/m/d H:i')) ?></span>
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] === $post['user_id']): ?>
                     <a href="edit.php?id=<?= $post['id'] ?>" class="edit-link">編集</a>

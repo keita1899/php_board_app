@@ -38,13 +38,6 @@ function validate_password($password) {
     return null;
 }
 
-function validate_username($username) {
-    if (empty($username)) {
-        return MESSAGES['error']['user']['username_required'];
-    }
-    return null;
-}
-
 function validate_password_confirmation($password, $password_confirm) {
     if ($password !== $password_confirm) {
         return MESSAGES['error']['password']['mismatch'];

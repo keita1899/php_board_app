@@ -36,11 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <form action="signup.php" method="post" class="signup-form">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
     <div class="form-group">
-      <label for="username">ユーザー名</label>
-      <input type="text" id="username" name="username" placeholder="ユーザー名" value="<?= htmlspecialchars($old['username'] ?? '') ?>">
-      <?php $name = 'username'; include __DIR__ . '/../src/partials/error_message.php'; ?>
-    </div>
-    <div class="form-group">
       <label for="email">メールアドレス</label>
       <input type="email" id="email" name="email" placeholder="メールアドレス" value="<?= htmlspecialchars($old['email'] ?? '') ?>">
       <?php $name = 'email'; include __DIR__ . '/../src/partials/error_message.php'; ?>

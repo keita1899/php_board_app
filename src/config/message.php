@@ -26,9 +26,7 @@ const MESSAGES = [
       'unauthorized' => 'この操作を実行する権限がありません。',
     ],
     'user' => [
-      'username_taken' => 'このユーザー名は既に使われています。',
       'email_taken' => 'このメールアドレスは既に使われています。',
-      'username_required' => 'ユーザー名を入力してください。',
       'email_required' => 'メールアドレスを入力してください。',
       'email_invalid' => '正しいメールアドレスを入力してください。',
     ],

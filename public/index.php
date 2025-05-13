@@ -88,7 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="/post.php?id=<?= $post['id'] ?>" class="post-link">
           <div class="post">
             <div class="post-header">
-              <span class="post-author"><?= htmlspecialchars($post['username']) ?></span>
               <span class="post-date"><?= htmlspecialchars((new DateTime($post['created_at']))->format('Y/m/d H:i')) ?></span>
             </div>
             <div class="post-title"><?= htmlspecialchars($post['title']) ?></div>

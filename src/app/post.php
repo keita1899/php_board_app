@@ -5,8 +5,7 @@ function get_posts($pdo) {
   try {
     $sql = <<<SQL
       SELECT 
-        posts.*,
-        users.username
+        posts.*
       FROM 
         posts
         JOIN users ON posts.user_id = users.id
@@ -27,8 +26,7 @@ function get_post($pdo, $post_id) {
   try {
     $sql = <<<SQL
       SELECT 
-        posts.*,
-        users.username
+        posts.*
       FROM 
         posts
         JOIN users ON posts.user_id = users.id
