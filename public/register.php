@@ -1,21 +1,21 @@
 <?php
 session_start();
 require_once __DIR__ . '/../src/lib/csrf.php';
-require_once __DIR__ . '/../src/app/signup.php';
+require_once __DIR__ . '/../src/app/register.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
 
-$errors = get_form_errors('signup');
-$old = get_form_old('signup');
-clear_form_errors('signup');
-clear_form_old('signup');
+$errors = get_form_errors('register');
+$old = get_form_old('register');
+clear_form_errors('register');
+clear_form_old('register');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
     set_flash_message('error', 'security', 'invalid_csrf');
-    redirect('signup.php');
+    redirect('register.php');
   }
-  signup($_POST);
+  register($_POST);
 }
 ?>
 
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <h1>新規登録</h1>
 
-  <form action="signup.php" method="post" class="signup-form">
+  <form action="register.php" method="post" class="register-form">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
     <div class="form-group">
       氏名

@@ -5,7 +5,7 @@ const MESSAGES = [
     'auth' => [
       'login' => 'ログインしました。',
       'logout' => 'ログアウトしました。',
-      'signup' => '新規登録が完了しました。',
+      'register' => '新規登録が完了しました。',
     ],
     'post' => [
       'created' => '投稿を作成しました。',
@@ -26,7 +26,7 @@ const MESSAGES = [
     'auth' => [
       'require_login' => 'ログインしてください。',
       'login_failed' => 'メールアドレスまたはパスワードが間違っています。',
-      'signup_failed' => '新規登録に失敗しました。',
+      'register_failed' => '新規登録に失敗しました。',
       'unauthorized' => 'この操作を実行する権限がありません。',
     ],
     'user' => [

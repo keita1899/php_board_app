@@ -12,7 +12,7 @@ require_once __DIR__ . '/../lib/auth.php';
           <input type="submit" value="ログアウト" class="nav-button">
         </form>
       <?php else: ?>
-        <a href="/signup.php" class="nav-link">新規登録</a>
+        <a href="/register.php" class="nav-link">新規登録</a>
         <a href="/login.php" class="nav-link">ログイン</a>
       <?php endif; ?>
     </nav>

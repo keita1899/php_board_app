@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php include __DIR__ . '/../src/partials/flash_message.php'; ?>
   <h1>ログイン</h1>
 
-  <form action="login.php" method="post" class="signup-form">
+  <form action="login.php" method="post" class="register-form">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
     <?php $name = 'form'; include __DIR__ . '/../src/partials/error_message.php'; ?>
     <div class="form-group">

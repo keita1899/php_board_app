@@ -85,7 +85,7 @@ function validate_address($address) {
     return null;
 }
 
-function validate_signup($pdo, $data) {
+function validate_register($pdo, $data) {
     $errors = [];
 
     if ($error = validate_last_name($data['last_name'])) {
