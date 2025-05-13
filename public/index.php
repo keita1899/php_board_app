@@ -3,7 +3,7 @@ session_start();
 
 require_once __DIR__ . '/../src/lib/csrf.php';
 require_once __DIR__ . '/../src/app/post.php';
-require_once __DIR__ . '/../src/lib/validation.php';
+require_once __DIR__ . '/../src/validations/post.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
 require_once __DIR__ . '/../src/lib/flash_message.php';
