@@ -10,12 +10,25 @@ $old = get_form_old('register');
 clear_form_errors('register');
 clear_form_old('register');
 
+if (isset($_SESSION['register_data'])) {
+  $old = $_SESSION['register_data'];
+} else {
+  $old = [
+    'last_name' => '',
+    'first_name' => '',
+    'gender' => '',
+    'prefecture' => '',
+    'address' => '',
+    'email' => ''
+  ];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
     set_flash_message('error', 'security', 'invalid_csrf');
     redirect('register.php');
   }
-  register($_POST);
+  register_input($_POST);
 }
 ?>
 
@@ -24,14 +37,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>新規登録</title>
+  <title>会員情報登録フォーム</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <?php include __DIR__ . '/../src/partials/header.php'; ?>
   <?php include __DIR__ . '/../src/partials/flash_message.php'; ?>
 
-  <h1>新規登録</h1>
+  <h1>会員情報登録フォーム</h1>
 
   <form action="register.php" method="post" class="register-form">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">

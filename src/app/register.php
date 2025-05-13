@@ -26,7 +26,7 @@ function create_user($pdo, $email, $password, $last_name, $first_name, $gender, 
   }
 }
 
-function register($data) {
+function register_input($data) {
   $old = [
     'last_name' => $data['last_name'] ?? '',
     'first_name' => $data['first_name'] ?? '',
@@ -37,20 +37,48 @@ function register($data) {
   ];
 
   $pdo = getPDO();
-
   $errors = validate_register($pdo, $data);
+  
   if ($errors) {
     redirect_with_errors('/register.php', 'register', $errors, $old);
   }
 
-  $user_id = create_user($pdo, $data['email'], $data['password'], $data['last_name'], $data['first_name'], $data['gender'], $data['prefecture'], $data['address']);
+  $_SESSION['register_data'] = $data;
+  redirect('register_confirm.php');
+}
+
+function register_confirm() {
+  if (!isset($_SESSION['register_data'])) {
+    redirect('register.php');
+  }
+
+  return $_SESSION['register_data'];
+}
+
+function register_complete() {
+  if (!isset($_SESSION['register_data'])) {
+    redirect('register.php');
+  }
+
+  $data = $_SESSION['register_data'];
+  $pdo = getPDO();
+
+  $user_id = create_user(
+    $pdo,
+    $data['email'],
+    $data['password'],
+    $data['last_name'],
+    $data['first_name'],
+    $data['gender'],
+    $data['prefecture'],
+    $data['address']
+  );
 
   if ($user_id) {
     set_login_session($user_id);
-    set_flash_message('success', 'auth', 'register');
-    redirect('index.php');
+    unset($_SESSION['register_data']);
   } else {
     set_flash_message('error', 'auth', 'register_failed');
-    redirect_with_errors('/register.php', 'register', $errors, $old);
+    redirect('register.php');
   }
 }
