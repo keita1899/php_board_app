@@ -16,7 +16,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     set_flash_message('error', 'security', 'invalid_csrf');
     redirect('login.php');
   }
-  login($_POST);
+
+  $form_data = [
+    'email' => $_POST['email'] ?? '',
+    'password' => $_POST['password'] ?? '',
+  ];
+
+  login($form_data);
 }
 ?>
 

@@ -3,7 +3,7 @@ session_start();
 require_once __DIR__ . '/../src/lib/csrf.php';
 require_once __DIR__ . '/../src/app/register.php';
 
-$data = register_confirm();
+$form_data = register_confirm();
 ?>
 
 <!DOCTYPE html>
@@ -23,17 +23,17 @@ $data = register_confirm();
   <div class="">
     <div class="">
       <label>氏名</label>
-      <p><?= htmlspecialchars($data['last_name'] . ' ' . $data['first_name']) ?></p>
+      <p><?= htmlspecialchars($form_data['last_name'] . ' ' . $form_data['first_name']) ?></p>
     </div>
   
     <div class="">
       <label>性別</label>
-      <p><?= $data['gender'] === 'male' ? '男性' : '女性' ?></p>
+      <p><?= $form_data['gender'] === 'male' ? '男性' : '女性' ?></p>
     </div>
   
     <div class="">
       <label>住所</label>
-      <p><?= htmlspecialchars($data['prefecture'] . $data['address']) ?></p>
+      <p><?= htmlspecialchars($form_data['prefecture'] . $form_data['address']) ?></p>
     </div>
   
     <div class="">
@@ -43,7 +43,7 @@ $data = register_confirm();
   
     <div class="">
       <label>メールアドレス</label>
-      <p><?= htmlspecialchars($data['email']) ?></p>
+      <p><?= htmlspecialchars($form_data['email']) ?></p>
     </div>
   </div>
 

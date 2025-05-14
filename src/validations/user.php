@@ -85,43 +85,43 @@ function validate_address($address) {
     return null;
 }
 
-function validate_register($pdo, $data) {
+function validate_register($pdo, $form_data) {
     $errors = [];
 
-    if ($error = validate_last_name($data['last_name'])) {
+    if ($error = validate_last_name($form_data['last_name'])) {
         $errors['last_name'] = $error;
     }
 
-    if ($error = validate_first_name($data['first_name'])) {
+    if ($error = validate_first_name($form_data['first_name'])) {
         $errors['first_name'] = $error;
     }
 
-    if ($error = validate_gender($data['gender'] ?? '')) {
+    if ($error = validate_gender($form_data['gender'] ?? '')) {
         $errors['gender'] = $error;
     }
 
-    if ($error = validate_prefecture($data['prefecture'])) {
+    if ($error = validate_prefecture($form_data['prefecture'])) {
         $errors['prefecture'] = $error;
     }
 
-    if ($error = validate_address($data['address'])) {
+    if ($error = validate_address($form_data['address'])) {
         $errors['address'] = $error;
     }
     
-    if ($error = validate_password($data['password'])) {
+    if ($error = validate_password($form_data['password'])) {
         $errors['password'] = $error;
     }
     
-    if ($error = validate_password_confirmation($data['password'], $data['password_confirm'])) {
+    if ($error = validate_password_confirmation($form_data['password'], $form_data['password_confirm'])) {
         $errors['password_confirm'] = $error;
     }
     
-    if ($error = validate_email($data['email'])) {
+    if ($error = validate_email($form_data['email'])) {
         $errors['email'] = $error;
     }
     
     if (empty($errors['email'])) {
-        if (is_email_taken($pdo, $data['email'])) {
+        if (is_email_taken($pdo, $form_data['email'])) {
         $errors['email'] = MESSAGES['error']['user']['email_taken'];
         }
     }
@@ -129,13 +129,13 @@ function validate_register($pdo, $data) {
     return $errors;
 }
 
-function validate_login($data) {
+function validate_login($form_data) {
     $errors = [];
     
-    if ($error = validate_email($data['email'])) {
+    if ($error = validate_email($form_data['email'])) {
         $errors['email'] = $error;
     }
-    if ($error = validate_password($data['password'])) {
+    if ($error = validate_password($form_data['password'])) {
         $errors['password'] = $error;
     }
     

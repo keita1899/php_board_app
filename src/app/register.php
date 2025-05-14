@@ -26,24 +26,32 @@ function create_user($pdo, $email, $password, $last_name, $first_name, $gender, 
   }
 }
 
-function register_input($data) {
+function register_input($form_data) {
   $old = [
-    'last_name' => $data['last_name'] ?? '',
-    'first_name' => $data['first_name'] ?? '',
-    'gender' => $data['gender'] ?? '',
-    'prefecture' => $data['prefecture'] ?? '',
-    'address' => $data['address'] ?? '',
-    'email' => $data['email'] ?? '',
+    'last_name' => $form_data['last_name'] ?? '',
+    'first_name' => $form_data['first_name'] ?? '',
+    'gender' => $form_data['gender'] ?? '',
+    'prefecture' => $form_data['prefecture'] ?? '',
+    'address' => $form_data['address'] ?? '',
+    'email' => $form_data['email'] ?? '',
   ];
 
   $pdo = getPDO();
-  $errors = validate_register($pdo, $data);
+  $errors = validate_register($pdo, $form_data);
   
   if ($errors) {
     redirect_with_errors('/register.php', 'register', $errors, $old);
   }
 
-  $_SESSION['register_data'] = $data;
+  $_SESSION['register_data'] = [
+    'last_name'        => $form_data['last_name'],
+    'first_name'       => $form_data['first_name'],
+    'gender'           => $form_data['gender'],
+    'prefecture'       => $form_data['prefecture'],
+    'address'          => $form_data['address'],
+    'email'            => $form_data['email'],
+    'password'         => $form_data['password'],
+  ];
   redirect('register_confirm.php');
 }
 
@@ -60,18 +68,18 @@ function register_complete() {
     redirect('register.php');
   }
 
-  $data = $_SESSION['register_data'];
+  $form_data = $_SESSION['register_data'];
   $pdo = getPDO();
 
   $user_id = create_user(
     $pdo,
-    $data['email'],
-    $data['password'],
-    $data['last_name'],
-    $data['first_name'],
-    $data['gender'],
-    $data['prefecture'],
-    $data['address']
+    $form_data['email'],
+    $form_data['password'],
+    $form_data['last_name'],
+    $form_data['first_name'],
+    $form_data['gender'],
+    $form_data['prefecture'],
+    $form_data['address']
   );
 
   if ($user_id) {
