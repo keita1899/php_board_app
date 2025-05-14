@@ -7,13 +7,9 @@ require_once __DIR__ . '/../src/config/message.php';
 
 $errors = get_form_errors('register');
 $old = get_form_old('register');
-clear_form_errors('register');
-clear_form_old('register');
 
-if (isset($_SESSION['register_data'])) {
-  $old = $_SESSION['register_data'];
-} else {
-  $old = [
+if (empty($old)) {
+  $old = $_SESSION['register_data'] ?? [
     'last_name' => '',
     'first_name' => '',
     'gender' => '',
@@ -23,12 +19,27 @@ if (isset($_SESSION['register_data'])) {
   ];
 }
 
+clear_form_errors('register');
+clear_form_old('register');
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
     set_flash_message('error', 'security', 'invalid_csrf');
     redirect('register.php');
   }
-  register_input($_POST);
+
+  $form_data = [
+    'last_name' => $_POST['last_name'] ?? '',
+    'first_name' => $_POST['first_name'] ?? '',
+    'gender' => $_POST['gender'] ?? '',
+    'prefecture' => $_POST['prefecture'] ?? '',
+    'address' => $_POST['address'] ?? '',
+    'email' => $_POST['email'] ?? '',
+    'password' => $_POST['password'] ?? '',
+    'password_confirm' => $_POST['password_confirm'] ?? '',
+  ];
+
+  register_input($form_data);
 }
 ?>
 
@@ -76,12 +87,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <div class="form-group">
       <label for="password">パスワード</label>
-      <input type="password" id="password" name="password" value="<?= htmlspecialchars($old['password'] ?? '') ?>">
+      <input type="password" id="password" name="password">
       <?php $name = 'password'; include __DIR__ . '/../src/partials/error_message.php'; ?>
     </div>
     <div class="form-group">
       <label for="password_confirm">パスワード確認</label>
-      <input type="password" id="password_confirm" name="password_confirm" value="<?= htmlspecialchars($old['password_confirm'] ?? '') ?>">
+      <input type="password" id="password_confirm" name="password_confirm">
       <?php $name = 'password_confirm'; include __DIR__ . '/../src/partials/error_message.php'; ?>
     </div>
     <div class="form-group">
