@@ -3,7 +3,7 @@ session_start();
 
 require_once __DIR__ . '/../src/lib/csrf.php';
 require_once __DIR__ . '/../src/app/post.php';
-require_once __DIR__ . '/../src/lib/validation.php';
+require_once __DIR__ . '/../src/validations/post.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
 require_once __DIR__ . '/../src/lib/flash_message.php';
@@ -88,7 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="/post.php?id=<?= $post['id'] ?>" class="post-link">
           <div class="post">
             <div class="post-header">
-              <span class="post-author"><?= htmlspecialchars($post['username']) ?></span>
               <span class="post-date"><?= htmlspecialchars((new DateTime($post['created_at']))->format('Y/m/d H:i')) ?></span>
             </div>
             <div class="post-title"><?= htmlspecialchars($post['title']) ?></div>

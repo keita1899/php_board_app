@@ -5,7 +5,7 @@ const MESSAGES = [
     'auth' => [
       'login' => 'ログインしました。',
       'logout' => 'ログアウトしました。',
-      'signup' => '新規登録が完了しました。',
+      'register' => '新規登録が完了しました。',
     ],
     'post' => [
       'created' => '投稿を作成しました。',
@@ -19,17 +19,21 @@ const MESSAGES = [
     ],
   ],
   'error' => [
+    'common' => [
+      'required' => 'を入力してください。',
+      'select' => 'を選択してください。',
+    ],
     'auth' => [
       'require_login' => 'ログインしてください。',
       'login_failed' => 'メールアドレスまたはパスワードが間違っています。',
-      'signup_failed' => '新規登録に失敗しました。',
+      'register_failed' => '新規登録に失敗しました。',
       'unauthorized' => 'この操作を実行する権限がありません。',
     ],
     'user' => [
-      'username_taken' => 'このユーザー名は既に使われています。',
+      'last_name_max_length' => '姓は255文字以内で入力してください。',
+      'first_name_max_length' => '名は255文字以内で入力してください。',
+      'address_max_length' => '住所は255文字以内で入力してください。',
       'email_taken' => 'このメールアドレスは既に使われています。',
-      'username_required' => 'ユーザー名を入力してください。',
-      'email_required' => 'メールアドレスを入力してください。',
       'email_invalid' => '正しいメールアドレスを入力してください。',
     ],
     'password' => [
@@ -43,9 +47,7 @@ const MESSAGES = [
       'create_failed' => '投稿の作成に失敗しました。',
       'update_failed' => '投稿の更新に失敗しました。',
       'delete_failed' => '投稿の削除に失敗しました。',
-      'title_required' => 'タイトルを入力してください。',
       'title_max_length' => 'タイトルは255文字以内で入力してください。',
-      'content_required' => '内容を入力してください。',
       'content_max_length' => '内容は1000文字以内で入力してください。',
     ],
     'security' => [

@@ -5,11 +5,9 @@ function get_posts($pdo) {
   try {
     $sql = <<<SQL
       SELECT 
-        posts.*,
-        users.username
+        posts.*
       FROM 
         posts
-        JOIN users ON posts.user_id = users.id
       ORDER BY 
         posts.created_at DESC
     SQL;
@@ -27,11 +25,9 @@ function get_post($pdo, $post_id) {
   try {
     $sql = <<<SQL
       SELECT 
-        posts.*,
-        users.username
+        posts.*
       FROM 
         posts
-        JOIN users ON posts.user_id = users.id
       WHERE
         posts.id = ?
     SQL;
