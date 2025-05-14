@@ -8,7 +8,6 @@ function get_posts($pdo) {
         posts.*
       FROM 
         posts
-        JOIN users ON posts.user_id = users.id
       ORDER BY 
         posts.created_at DESC
     SQL;
@@ -29,7 +28,6 @@ function get_post($pdo, $post_id) {
         posts.*
       FROM 
         posts
-        JOIN users ON posts.user_id = users.id
       WHERE
         posts.id = ?
     SQL;
