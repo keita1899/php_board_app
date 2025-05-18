@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
   <?php include __DIR__ . '/../src/partials/header.php'; ?>
   <?php include __DIR__ . '/../src/partials/flash_message.php'; ?>
-
+  <?php include __DIR__ . '/../src/partials/sidebar.php'; ?>
   <?php if (isset($_SESSION['user_id'])): ?>
     <form action="index.php" method="post">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
