@@ -107,6 +107,8 @@ function search_threads($pdo, $keyword) {
       $params[] = '%' . $keyword . '%';
     }
 
+    $sql .= " ORDER BY threads.created_at DESC";
+
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     return $stmt->fetchAll();
