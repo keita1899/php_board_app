@@ -13,6 +13,10 @@ function fetch_password_by_id($pdo, $user_id) {
 function delete_user($pdo, $user_id) {
   require_login();
 
+  if ($_SESSION['user_id'] != $user_id) {
+    throw new Exception(MESSAGES['error']['auth']['unauthorized']);
+  }
+
   try {
     $pdo->beginTransaction();
 
