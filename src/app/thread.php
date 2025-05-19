@@ -91,3 +91,30 @@ function delete_thread($pdo, $thread_id, $user_id) {
 function is_thread_owner($owner_id, $current_user_id) {
   return $owner_id === $current_user_id;
 }
+
+function search_threads($pdo, $keyword) {
+  try {
+    $sql = <<<SQL
+      SELECT 
+        threads.*
+      FROM 
+        threads
+    SQL;
+
+    $params = [];
+    if (!empty($keyword)) {
+      $sql .= " WHERE threads.title LIKE ?";
+      $params[] = '%' . $keyword . '%';
+    }
+
+    $sql .= " ORDER BY threads.created_at DESC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll();
+
+  } catch (PDOException $e) {
+    error_log('Thread search error: ' . $e->getMessage());
+    return [];
+  }
+}

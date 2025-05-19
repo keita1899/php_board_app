@@ -13,3 +13,10 @@ function validate_select($value, $field_name) {
     }
     return null;
 }
+
+function validate_max_length($value, $field_name, $max_length) {
+    if (mb_strlen($value) > $max_length) {
+        return $field_name . str_replace('{max_length}', $max_length, MESSAGES['error']['common']['max_length']);
+    }
+    return null;
+}
