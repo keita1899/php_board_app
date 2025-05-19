@@ -8,7 +8,7 @@ function validate_title($title) {
   }
 
   if (mb_strlen($title) > 255) {
-      return MESSAGES['error']['post']['title_max_length'];
+      return MESSAGES['error']['thread']['title_max_length'];
   }
 
   return null;
@@ -20,20 +20,20 @@ function validate_content($content) {
   }
 
   if (mb_strlen($content) > 1000) {
-      return MESSAGES['error']['post']['content_max_length'];
+      return MESSAGES['error']['thread']['content_max_length'];
   }
 
   return null;
 }
 
-function validate_post($post) {
+function validate_thread($thread) {
   $errors = [];
 
-  if ($error = validate_title($post['title'])) {
+  if ($error = validate_title($thread['title'])) {
       $errors['title'] = $error;
   }
 
-  if ($error = validate_content($post['content'])) {
+  if ($error = validate_content($thread['content'])) {
       $errors['content'] = $error;
   }
 

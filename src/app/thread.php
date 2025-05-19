@@ -1,15 +1,15 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 
-function get_posts($pdo) {
+function get_threads($pdo) {
   try {
     $sql = <<<SQL
       SELECT 
-        posts.*
+        threads.*
       FROM 
-        posts
+        threads
       ORDER BY 
-        posts.created_at DESC
+        threads.created_at DESC
     SQL;
 
     $stmt = $pdo->query($sql);
@@ -21,19 +21,19 @@ function get_posts($pdo) {
   }
 }
 
-function get_post($pdo, $post_id) {
+function get_thread($pdo, $thread_id) {
   try {
     $sql = <<<SQL
       SELECT 
-        posts.*
+        threads.*
       FROM 
-        posts
+        threads
       WHERE
-        posts.id = ?
+        threads.id = ?
     SQL;
 
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$post_id]);
+    $stmt->execute([$thread_id]);
     return $stmt->fetch();
 
   } catch (PDOException $e) {
@@ -42,9 +42,9 @@ function get_post($pdo, $post_id) {
   }
 }
 
-function create_post($pdo, $user_id, $title, $content) {
+function create_thread($pdo, $user_id, $title, $content) {
   try {
-    $stmt = $pdo->prepare('INSERT INTO posts (user_id, title, content, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())');
+    $stmt = $pdo->prepare('INSERT INTO threads (user_id, title, content, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())');
     return $stmt->execute([$user_id, $title, $content]);
   } catch (PDOException $e) {
     error_log('Post creation error: ' . $e->getMessage());
@@ -52,31 +52,31 @@ function create_post($pdo, $user_id, $title, $content) {
   }
 }
 
-function update_post($pdo, $post_id, $user_id, $title, $content) {
+function update_thread($pdo, $thread_id, $user_id, $title, $content) {
   try {
-    $stmt = $pdo->prepare('UPDATE posts SET title = ?, content = ?, updated_at = NOW() WHERE id = ? AND user_id = ?');
-    return $stmt->execute([$title, $content, $post_id, $user_id]);
+    $stmt = $pdo->prepare('UPDATE threads SET title = ?, content = ?, updated_at = NOW() WHERE id = ? AND user_id = ?');
+    return $stmt->execute([$title, $content, $thread_id, $user_id]);
   } catch (PDOException $e) {
     error_log('Post update error: ' . $e->getMessage());
     return false;
   }
 }
 
-function delete_post($pdo, $post_id, $user_id) {
+function delete_thread($pdo, $thread_id, $user_id) {
   try {
     $pdo->beginTransaction();
     
-    $stmt = $pdo->prepare('SELECT user_id FROM posts WHERE id = ?');
-    $stmt->execute([$post_id]);
-    $post = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $pdo->prepare('SELECT user_id FROM threads WHERE id = ?');
+    $stmt->execute([$thread_id]);
+    $thread = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    if (!$post || $post['user_id'] !== $user_id) {
+    if (!$thread || $thread['user_id'] !== $user_id) {
         $pdo->rollBack();
         return false;
     }
     
-    $stmt = $pdo->prepare('DELETE FROM posts WHERE id = ? AND user_id = ?');
-    $stmt->execute([$post_id, $user_id]);
+    $stmt = $pdo->prepare('DELETE FROM threads WHERE id = ? AND user_id = ?');
+    $stmt->execute([$thread_id, $user_id]);
     
     $pdo->commit();
     return true;
@@ -88,6 +88,6 @@ function delete_post($pdo, $post_id, $user_id) {
   }
 }
 
-function is_post_owner($owner_id, $current_user_id) {
+function is_thread_owner($owner_id, $current_user_id) {
   return $owner_id === $current_user_id;
 }

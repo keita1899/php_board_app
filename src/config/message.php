@@ -7,7 +7,7 @@ const MESSAGES = [
       'logout' => 'ログアウトしました。',
       'register' => '新規登録が完了しました。',
     ],
-    'post' => [
+    'thread' => [
       'created' => '投稿を作成しました。',
       'updated' => '投稿を更新しました。',
       'deleted' => '投稿を削除しました。',
@@ -41,7 +41,7 @@ const MESSAGES = [
       'too_short' => 'パスワードは8文字以上で入力してください。',
       'required' => 'パスワードを入力してください。',
     ],
-    'post' => [
+    'thread' => [
       'not_found' => '投稿が見つかりません。',
       'not_owner' => 'この投稿の編集は許可されていません。',
       'create_failed' => '投稿の作成に失敗しました。',
