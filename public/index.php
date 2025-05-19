@@ -75,14 +75,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
   
       <div class="form-group">
-        <button type="submit">投稿する</button>
+        <button type="submit">スレッドを作成する</button>
       </div>
     </form>
   <?php endif; ?>
 
   <div class="threads">
     <?php if (empty($threads)): ?>
-      <p>投稿はありません</p>
+      <p>スレッドはありません</p>
     <?php else: ?>
       <?php foreach ($threads as $thread): ?>
         <a href="/thread.php?id=<?= $thread['id'] ?>" class="thread-link">
