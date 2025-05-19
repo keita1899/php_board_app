@@ -52,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   $old = [
       'title' => $_POST['title'] ?? '',
-      'content' => $_POST['content'] ?? '',
   ];
 
   $errors = validate_thread($old);
@@ -60,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect_with_errors('edit.php?id=' . $thread_id, 'thread', $errors, $old);
   }
 
-  if (update_thread($pdo, $thread_id, $_SESSION['user_id'], $_POST['title'], $_POST['content'])) {
+  if (update_thread($pdo, $thread_id, $_SESSION['user_id'], $_POST['title'])) {
     set_flash_message('success', 'thread', 'updated');
     redirect('thread.php?id=' . $thread_id);
   } else {
@@ -91,12 +90,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="title">タイトル:</label>
         <input type="text" id="title" name="title" value="<?= htmlspecialchars($old['title'] ?? $thread['title']) ?>">
         <?php $name = 'title'; include __DIR__ . '/../src/partials/error_message.php'; ?>
-      </div>
-  
-      <div class="form-group">
-        <label for="content">内容:</label>
-        <textarea id="content" name="content"><?= htmlspecialchars($old['content'] ?? $thread['content']) ?></textarea>
-        <?php $name = 'content'; include __DIR__ . '/../src/partials/error_message.php'; ?>
       </div>
   
       <div class="form-group">

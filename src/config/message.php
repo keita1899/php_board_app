@@ -48,7 +48,6 @@ const MESSAGES = [
       'update_failed' => 'スレッドの更新に失敗しました。',
       'delete_failed' => 'スレッドの削除に失敗しました。',
       'title_max_length' => 'タイトルは255文字以内で入力してください。',
-      'content_max_length' => '内容は1000文字以内で入力してください。',
     ],
     'security' => [
       'invalid_csrf' => 'セキュリティトークンが無効です。ページを再読み込みしてください。',

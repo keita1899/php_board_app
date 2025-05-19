@@ -27,7 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   $old = [
     'title' => $_POST['title'] ?? '',
-    'content' => $_POST['content'] ?? '',
   ];
 
   $errors = validate_thread($old);
@@ -35,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect_with_errors('index.php', 'thread', $errors, $old);
   }
 
-  if (create_thread($pdo, $_SESSION['user_id'], $_POST['title'], $_POST['content'])) {
+  if (create_thread($pdo, $_SESSION['user_id'], $_POST['title'])) {
     set_flash_message('success', 'thread', 'created');
     redirect('index.php');
   } else {
@@ -69,12 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
   
       <div class="form-group">
-        <label for="content">内容:</label>
-        <textarea id="content" name="content"><?= htmlspecialchars($old['content'] ?? '') ?></textarea>
-        <?php $name = 'content'; include __DIR__ . '/../src/partials/error_message.php'; ?>
-      </div>
-  
-      <div class="form-group">
         <button type="submit">スレッドを作成する</button>
       </div>
     </form>
@@ -91,7 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <span class="thread-date"><?= htmlspecialchars((new DateTime($thread['created_at']))->format('Y/m/d H:i')) ?></span>
             </div>
             <div class="thread-title"><?= htmlspecialchars($thread['title']) ?></div>
-            <div class="thread-content"><?= htmlspecialchars($thread['content']) ?></div>
             <?php if ($thread['updated_at'] !== $thread['created_at']): ?>
               <div class="thread-meta">
                 編集日時: <?= htmlspecialchars((new DateTime($thread['updated_at']))->format('Y/m/d H:i')) ?>

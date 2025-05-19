@@ -42,20 +42,20 @@ function get_thread($pdo, $thread_id) {
   }
 }
 
-function create_thread($pdo, $user_id, $title, $content) {
+function create_thread($pdo, $user_id, $title) {
   try {
-    $stmt = $pdo->prepare('INSERT INTO threads (user_id, title, content, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())');
-    return $stmt->execute([$user_id, $title, $content]);
+    $stmt = $pdo->prepare('INSERT INTO threads (user_id, title, created_at, updated_at) VALUES (?, ?, NOW(), NOW())');
+    return $stmt->execute([$user_id, $title]);
   } catch (PDOException $e) {
     error_log('Post creation error: ' . $e->getMessage());
     return false;
   }
 }
 
-function update_thread($pdo, $thread_id, $user_id, $title, $content) {
+function update_thread($pdo, $thread_id, $user_id, $title) {
   try {
-    $stmt = $pdo->prepare('UPDATE threads SET title = ?, content = ?, updated_at = NOW() WHERE id = ? AND user_id = ?');
-    return $stmt->execute([$title, $content, $thread_id, $user_id]);
+    $stmt = $pdo->prepare('UPDATE threads SET title = ?, updated_at = NOW() WHERE id = ? AND user_id = ?');
+    return $stmt->execute([$title, $thread_id, $user_id]);
   } catch (PDOException $e) {
     error_log('Post update error: ' . $e->getMessage());
     return false;

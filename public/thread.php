@@ -89,7 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             
             <div class="thread-title"><?= htmlspecialchars($thread['title']) ?></div>
-            <div class="thread-content"><?= htmlspecialchars($thread['content']) ?></div>
             
             <?php if ($thread['updated_at'] !== $thread['created_at']): ?>
                 <div class="thread-meta">
