@@ -16,7 +16,7 @@ clear_form_old('thread');
 $pdo = getPDO();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  $keyword = $_GET['keyword'] ?? '';
+  $keyword = trim($_GET['keyword'] ?? '');
 
   if ($error = validate_keyword($keyword)) {
     $errors['keyword'] = $error;
