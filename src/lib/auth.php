@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/util.php';
+require_once __DIR__ . '/flash_message.php';
 
 function is_logged_in() {
   return isset($_SESSION['user_id']);

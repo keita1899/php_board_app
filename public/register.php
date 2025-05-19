@@ -5,6 +5,11 @@ require_once __DIR__ . '/../src/app/register.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
 
+if (!isset($_SERVER['HTTP_REFERER']) || 
+  !in_array(parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH), ['/register.php', '/register_confirm.php'])) {
+  unset($_SESSION['register_data']);
+}
+
 $errors = get_form_errors('register');
 $old = get_form_old('register');
 
