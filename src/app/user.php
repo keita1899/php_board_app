@@ -20,7 +20,7 @@ function delete_user($pdo, $user_id) {
   try {
     $pdo->beginTransaction();
 
-    $stmt = $pdo->prepare('DELETE FROM posts WHERE user_id = :user_id');
+    $stmt = $pdo->prepare('DELETE FROM threads WHERE user_id = :user_id');
     $stmt->execute(['user_id' => $user_id]);
 
     $stmt = $pdo->prepare('DELETE FROM users WHERE id = :id');

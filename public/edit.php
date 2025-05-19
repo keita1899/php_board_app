@@ -3,8 +3,8 @@ session_start();
 
 require_once __DIR__ . '/../src/lib/auth.php';
 require_once __DIR__ . '/../src/lib/csrf.php';
-require_once __DIR__ . '/../src/app/post.php';
-require_once __DIR__ . '/../src/validations/post.php';
+require_once __DIR__ . '/../src/app/thread.php';
+require_once __DIR__ . '/../src/validations/thread.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
 require_once __DIR__ . '/../src/lib/flash_message.php';
@@ -13,26 +13,26 @@ require_login();
 
 $pdo = getPDO();
 
-$errors = get_form_errors('post');
-$old = get_form_old('post');
-clear_form_errors('post');
-clear_form_old('post');
+$errors = get_form_errors('thread');
+$old = get_form_old('thread');
+clear_form_errors('thread');
+clear_form_old('thread');
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  $post_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?? null;
-  if (!$post_id) {
-    set_flash_message('error', 'post', 'not_found');
+  $thread_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?? null;
+  if (!$thread_id) {
+    set_flash_message('error', 'thread', 'not_found');
     redirect('index.php');
   }
 
-  $post = get_post($pdo, $post_id);
-  if (!$post) {
-    set_flash_message('error', 'post', 'not_found');
+  $thread = get_thread($pdo, $thread_id);
+  if (!$thread) {
+    set_flash_message('error', 'thread', 'not_found');
     redirect('index.php');
   }
 
-  if (!is_post_owner($post['user_id'], $_SESSION['user_id'])) {
-    set_flash_message('error', 'post', 'not_owner');
+  if (!is_thread_owner($thread['user_id'], $_SESSION['user_id'])) {
+    set_flash_message('error', 'thread', 'not_owner');
     redirect('index.php');
   }
 }
@@ -40,32 +40,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   require_login();
 
-  $post_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? null;
+  $thread_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? null;
   if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
     set_flash_message('error', 'security', 'invalid_csrf');
-    redirect('edit.php?id=' . $post_id);
+    redirect('edit.php?id=' . $thread_id);
   }
 
-  if (!$post_id) {
+  if (!$thread_id) {
     redirect('index.php');
   }
 
   $old = [
       'title' => $_POST['title'] ?? '',
-      'content' => $_POST['content'] ?? '',
   ];
 
-  $errors = validate_post($old);
+  $errors = validate_thread($old);
   if ($errors) {
-    redirect_with_errors('edit.php?id=' . $post_id, 'post', $errors, $old);
+    redirect_with_errors('edit.php?id=' . $thread_id, 'thread', $errors, $old);
   }
 
-  if (update_post($pdo, $post_id, $_SESSION['user_id'], $_POST['title'], $_POST['content'])) {
-    set_flash_message('success', 'post', 'updated');
-    redirect('post.php?id=' . $post_id);
+  if (update_thread($pdo, $thread_id, $_SESSION['user_id'], $_POST['title'])) {
+    set_flash_message('success', 'thread', 'updated');
+    redirect('thread.php?id=' . $thread_id);
   } else {
-    set_flash_message('error', 'post', 'update_failed');
-    redirect_with_errors('edit.php?id=' . $post_id, 'post', $errors, $old);
+    set_flash_message('error', 'thread', 'update_failed');
+    redirect_with_errors('edit.php?id=' . $thread_id, 'thread', $errors, $old);
   }
 }
 
@@ -84,24 +83,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php include __DIR__ . '/../src/partials/flash_message.php'; ?>
 
     <form action="edit.php" method="post">
-      <input type="hidden" name="id" value="<?= htmlspecialchars($post['id']) ?>">
+      <input type="hidden" name="id" value="<?= htmlspecialchars($thread['id']) ?>">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
       
       <div class="form-group">
         <label for="title">タイトル:</label>
-        <input type="text" id="title" name="title" value="<?= htmlspecialchars($old['title'] ?? $post['title']) ?>">
+        <input type="text" id="title" name="title" value="<?= htmlspecialchars($old['title'] ?? $thread['title']) ?>">
         <?php $name = 'title'; include __DIR__ . '/../src/partials/error_message.php'; ?>
       </div>
   
       <div class="form-group">
-        <label for="content">内容:</label>
-        <textarea id="content" name="content"><?= htmlspecialchars($old['content'] ?? $post['content']) ?></textarea>
-        <?php $name = 'content'; include __DIR__ . '/../src/partials/error_message.php'; ?>
-      </div>
-  
-      <div class="form-group">
         <button type="submit">更新する</button>
-        <a href="post.php?id=<?= $post['id'] ?>" class="edit-link">キャンセル</a>
+        <a href="thread.php?id=<?= $thread['id'] ?>" class="edit-link">キャンセル</a>
       </div>
     </form>
 </body>

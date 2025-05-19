@@ -7,10 +7,10 @@ const MESSAGES = [
       'logout' => 'ログアウトしました。',
       'register' => '新規登録が完了しました。',
     ],
-    'post' => [
-      'created' => '投稿を作成しました。',
-      'updated' => '投稿を更新しました。',
-      'deleted' => '投稿を削除しました。',
+    'thread' => [
+      'created' => 'スレッドを作成しました。',
+      'updated' => 'スレッドを更新しました。',
+      'deleted' => 'スレッドを削除しました。',
     ],
     'user' => [
       'created' => 'アカウントを作成しました。',
@@ -41,14 +41,13 @@ const MESSAGES = [
       'too_short' => 'パスワードは8文字以上で入力してください。',
       'required' => 'パスワードを入力してください。',
     ],
-    'post' => [
-      'not_found' => '投稿が見つかりません。',
-      'not_owner' => 'この投稿の編集は許可されていません。',
-      'create_failed' => '投稿の作成に失敗しました。',
-      'update_failed' => '投稿の更新に失敗しました。',
-      'delete_failed' => '投稿の削除に失敗しました。',
+    'thread' => [
+      'not_found' => 'スレッドが見つかりません。',
+      'not_owner' => 'このスレッドの編集は許可されていません。',
+      'create_failed' => 'スレッドの作成に失敗しました。',
+      'update_failed' => 'スレッドの更新に失敗しました。',
+      'delete_failed' => 'スレッドの削除に失敗しました。',
       'title_max_length' => 'タイトルは255文字以内で入力してください。',
-      'content_max_length' => '内容は1000文字以内で入力してください。',
     ],
     'security' => [
       'invalid_csrf' => 'セキュリティトークンが無効です。ページを再読み込みしてください。',

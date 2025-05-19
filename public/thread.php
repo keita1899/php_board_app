@@ -1,0 +1,101 @@
+<?php
+session_start();
+require_once __DIR__ . '/../src/lib/csrf.php';
+require_once __DIR__ . '/../src/app/thread.php';
+require_once __DIR__ . '/../src/lib/util.php';
+require_once __DIR__ . '/../src/config/message.php';
+require_once __DIR__ . '/../src/lib/flash_message.php';
+require_once __DIR__ . '/../src/lib/auth.php';
+
+$pdo = getPDO();
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $thread_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?? null;
+    if (!$thread_id) {
+        set_flash_message('error', 'thread', 'not_found');
+        redirect('index.php');
+    }
+
+    $thread = get_thread($pdo, $thread_id);
+    if (!$thread) {
+        set_flash_message('error', 'thread', 'not_found');
+        redirect('index.php');
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_login();
+
+    $thread_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? null;
+
+    if (!validate_csrf_token($_POST['csrf_token'] ?? '')) {
+        set_flash_message('error', 'security', 'invalid_csrf');
+        redirect('thread.php?id=' . $thread_id);
+    }
+
+    if (!$thread_id) {
+        set_flash_message('error', 'thread', 'not_found');
+        redirect('index.php');
+    }
+
+    $thread = get_thread($pdo, $thread_id);
+    if (!$thread) {
+        set_flash_message('error', 'thread', 'not_found');
+        redirect('index.php');
+    }
+
+    if (!is_thread_owner($thread['user_id'], $_SESSION['user_id'])) {
+        set_flash_message('error', 'thread', 'not_owner');
+        redirect('index.php');
+    }
+
+    if (delete_thread($pdo, $thread_id, $_SESSION['user_id'])) {
+        set_flash_message('success', 'thread', 'deleted');
+        redirect('index.php');
+    } else {
+        set_flash_message('error', 'thread', 'delete_failed');
+        redirect_with_errors('thread.php?id=' . $thread_id, 'thread', $errors, $_POST);
+    }
+}
+
+?>
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($thread['title']) ?></title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <?php include __DIR__ . '/../src/partials/header.php'; ?>
+    <?php include __DIR__ . '/../src/partials/flash_message.php'; ?>
+
+    <div class="container">
+        <a href="/index.php" class="back-link">← 戻る</a>
+        
+        <div class="thread">
+            <div class="thread-header">
+                <span class="thread-date">投稿日時: <?= htmlspecialchars((new DateTime($thread['created_at']))->format('Y/m/d H:i')) ?></span>
+                <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] === $thread['user_id']): ?>
+                    <a href="edit.php?id=<?= $thread['id'] ?>" class="edit-link">編集</a>
+                    <form action="thread.php?id=<?= $thread['id'] ?>" method="post">
+                        <input type="hidden" name="id" value="<?= htmlspecialchars($thread['id']) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
+                        <button type="submit" class="delete-button" onclick="return confirm('本当に削除しますか？')">削除</button>
+                    </form>
+                <?php endif; ?>
+            </div>
+            
+            <div class="thread-title"><?= htmlspecialchars($thread['title']) ?></div>
+            
+            <?php if ($thread['updated_at'] !== $thread['created_at']): ?>
+                <div class="thread-meta">
+                    最終更新: <?= htmlspecialchars((new DateTime($thread['updated_at']))->format('Y/m/d H:i')) ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</body>
+</html>

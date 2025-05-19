@@ -2,21 +2,21 @@
 session_start();
 
 require_once __DIR__ . '/../src/lib/csrf.php';
-require_once __DIR__ . '/../src/app/post.php';
-require_once __DIR__ . '/../src/validations/post.php';
+require_once __DIR__ . '/../src/app/thread.php';
+require_once __DIR__ . '/../src/validations/thread.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
 require_once __DIR__ . '/../src/lib/flash_message.php';
 
-$errors = get_form_errors('post');
-$old = get_form_old('post');
-clear_form_errors('post');
-clear_form_old('post');
+$errors = get_form_errors('thread');
+$old = get_form_old('thread');
+clear_form_errors('thread');
+clear_form_old('thread');
 
 $pdo = getPDO();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  $posts = get_posts($pdo);
+  $threads = get_threads($pdo);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -27,20 +27,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   $old = [
     'title' => $_POST['title'] ?? '',
-    'content' => $_POST['content'] ?? '',
   ];
 
-  $errors = validate_post($old);
+  $errors = validate_thread($old);
   if ($errors) {
-    redirect_with_errors('index.php', 'post', $errors, $old);
+    redirect_with_errors('index.php', 'thread', $errors, $old);
   }
 
-  if (create_post($pdo, $_SESSION['user_id'], $_POST['title'], $_POST['content'])) {
-    set_flash_message('success', 'post', 'created');
+  if (create_thread($pdo, $_SESSION['user_id'], $_POST['title'])) {
+    set_flash_message('success', 'thread', 'created');
     redirect('index.php');
   } else {
-    set_flash_message('error', 'post', 'create_failed');
-    redirect_with_errors('index.php', 'post', $errors, $old);
+    set_flash_message('error', 'thread', 'create_failed');
+    redirect_with_errors('index.php', 'thread', $errors, $old);
   }
 }
 
@@ -69,32 +68,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
   
       <div class="form-group">
-        <label for="content">内容:</label>
-        <textarea id="content" name="content"><?= htmlspecialchars($old['content'] ?? '') ?></textarea>
-        <?php $name = 'content'; include __DIR__ . '/../src/partials/error_message.php'; ?>
-      </div>
-  
-      <div class="form-group">
-        <button type="submit">投稿する</button>
+        <button type="submit">スレッドを作成する</button>
       </div>
     </form>
   <?php endif; ?>
 
-  <div class="posts">
-    <?php if (empty($posts)): ?>
-      <p>投稿はありません</p>
+  <div class="threads">
+    <?php if (empty($threads)): ?>
+      <p>スレッドはありません</p>
     <?php else: ?>
-      <?php foreach ($posts as $post): ?>
-        <a href="/post.php?id=<?= $post['id'] ?>" class="post-link">
-          <div class="post">
-            <div class="post-header">
-              <span class="post-date"><?= htmlspecialchars((new DateTime($post['created_at']))->format('Y/m/d H:i')) ?></span>
+      <?php foreach ($threads as $thread): ?>
+        <a href="/thread.php?id=<?= $thread['id'] ?>" class="thread-link">
+          <div class="thread">
+            <div class="thread-header">
+              <span class="thread-date"><?= htmlspecialchars((new DateTime($thread['created_at']))->format('Y/m/d H:i')) ?></span>
             </div>
-            <div class="post-title"><?= htmlspecialchars($post['title']) ?></div>
-            <div class="post-content"><?= htmlspecialchars($post['content']) ?></div>
-            <?php if ($post['updated_at'] !== $post['created_at']): ?>
-              <div class="post-meta">
-                編集日時: <?= htmlspecialchars((new DateTime($post['updated_at']))->format('Y/m/d H:i')) ?>
+            <div class="thread-title"><?= htmlspecialchars($thread['title']) ?></div>
+            <?php if ($thread['updated_at'] !== $thread['created_at']): ?>
+              <div class="thread-meta">
+                編集日時: <?= htmlspecialchars((new DateTime($thread['updated_at']))->format('Y/m/d H:i')) ?>
               </div>
             <?php endif; ?>
           </div>
