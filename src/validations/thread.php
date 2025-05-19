@@ -23,3 +23,11 @@ function validate_thread($thread) {
 
   return $errors;
 }
+
+function validate_keyword($keyword) {
+  if ($error = validate_max_length($keyword, 'キーワード', 255)) {
+      return $error;
+  }
+
+  return null;
+}

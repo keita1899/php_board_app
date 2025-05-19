@@ -16,7 +16,17 @@ clear_form_old('thread');
 $pdo = getPDO();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  $threads = get_threads($pdo);
+  $keyword = $_GET['keyword'] ?? '';
+
+  if ($error = validate_keyword($keyword)) {
+    $errors['keyword'] = $error;
+  }
+
+  if ($keyword !== '' && empty($errors)) {
+    $threads = search_threads($pdo, $keyword);
+  } else {
+    $threads = get_threads($pdo);
+  }
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -72,6 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </form>
   <?php endif; ?>
+
+  <form action="index.php" method="get">
+    <input type="text" name="keyword" placeholder="キーワードを入力">
+    <button type="submit">検索</button>
+    <?php $name = 'keyword'; include __DIR__ . '/../src/partials/error_message.php'; ?>
+  </form>
 
   <div class="threads">
     <?php if (empty($threads)): ?>
