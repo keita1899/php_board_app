@@ -28,3 +28,19 @@ function logout() {
 
   session_destroy();
 }
+
+function is_admin_logged_in() {
+  return isset($_SESSION['admin']);
+}
+
+function require_admin_login() {
+  if (!is_admin_logged_in()) {
+    set_flash_message('error', 'auth', 'require_admin_login');
+    redirect('admin_login.php');
+  }
+}
+
+function set_admin_session($admin_id) {
+  session_regenerate_id(true);
+  $_SESSION['admin'] = $admin_id;
+}

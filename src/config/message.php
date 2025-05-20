@@ -26,7 +26,7 @@ const MESSAGES = [
     ],
     'auth' => [
       'require_login' => 'ログインしてください。',
-      'login_failed' => 'メールアドレスまたはパスワードが間違っています。',
+      'login_failed' => 'ログインに失敗しました。',
       'register_failed' => '新規登録に失敗しました。',
       'unauthorized' => 'この操作を実行する権限がありません。',
     ],
