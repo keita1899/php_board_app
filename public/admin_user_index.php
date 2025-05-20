@@ -49,9 +49,9 @@ $users = fetch_users($pdo, $order);
       <?php foreach (
         $users as $user) : ?>
         <tr>
-          <td><?= $user['id']; ?></td>
+          <td><?= htmlspecialchars($user['id']); ?></td>
           <td>
-            <a href="admin_user_show.php?id=<?= $user['id']; ?>">
+            <a href="admin_user_show.php?id=<?= htmlspecialchars($user['id']); ?>">
               <?= htmlspecialchars($user['first_name']); ?> <?= htmlspecialchars($user['last_name']); ?>
             </a>
           </td>
