@@ -10,6 +10,21 @@ function fetch_password_by_id($pdo, $user_id) {
   return $row ? $row['password'] : null;
 }
 
+function fetch_users($pdo, $order = 'desc') {
+  $order = strtolower($order) === 'asc' ? 'ASC' : 'DESC';
+  $sql = <<<SQL
+    SELECT 
+      users.*
+    FROM 
+      users
+    ORDER BY
+      users.created_at $order
+  SQL;
+
+  $stmt = $pdo->query($sql);
+  return $stmt->fetchAll();
+}
+
 function delete_user($pdo, $user_id) {
   require_login();
 
