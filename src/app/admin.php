@@ -23,12 +23,12 @@ function admin_login($pdo, $form_data) {
 
   $admin = fetch_admin_by_username($pdo, $form_data['username']);
   if (!$admin) {
-    set_flash_message('error', 'auth', 'login_failed');
+    $errors['form'] = MESSAGES['error']['auth']['login_failed'];
     redirect_with_errors('/admin_login.php', 'admin_login', $errors, $old);
   }
 
   if (!password_verify($form_data['password'], $admin['password'])) {
-    set_flash_message('error', 'auth', 'login_failed');
+    $errors['form'] = MESSAGES['error']['auth']['login_failed'];
     redirect_with_errors('/admin_login.php', 'admin_login', $errors, $old);
   }
 
