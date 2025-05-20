@@ -26,9 +26,10 @@ const MESSAGES = [
     ],
     'auth' => [
       'require_login' => 'ログインしてください。',
-      'login_failed' => 'メールアドレスまたはパスワードが間違っています。',
+      'login_failed' => 'ログインに失敗しました。',
       'register_failed' => '新規登録に失敗しました。',
       'unauthorized' => 'この操作を実行する権限がありません。',
+      'require_admin_login' => '管理者としてログインしてください。',
     ],
     'user' => [
       'last_name_max_length' => '姓は255文字以内で入力してください。',
