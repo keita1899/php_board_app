@@ -9,7 +9,6 @@ function fetch_threads($pdo) {
         threads.title,
         threads.created_at,
         threads.updated_at,
-        users.id AS user_id,
         users.first_name,
         users.last_name
       FROM 
@@ -38,7 +37,6 @@ function fetch_thread($pdo, $thread_id) {
         threads.title,
         threads.created_at,
         threads.updated_at,
-        users.id AS user_id,
         users.first_name,
         users.last_name
       FROM 
