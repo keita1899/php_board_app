@@ -5,14 +5,9 @@ require_once __DIR__ . '/../validations/user.php';
 require_once __DIR__ . '/../lib/util.php';
 require_once __DIR__ . '/../lib/flash_message.php';
 require_once __DIR__ . '/../lib/auth.php';
+require_once __DIR__ . '/../models/user.php';
 
-function fetch_user_by_email($pdo, $email) {
-  $stmt = $pdo->prepare('SELECT * FROM users WHERE email = ?');
-  $stmt->execute([$email]);
-  return $stmt->fetch();
-}
-
-function login($form_data) {
+function login($pdo, $form_data) {
 
   $old = [
     'email' => $form_data['email'] ?? '',
@@ -22,8 +17,6 @@ function login($form_data) {
   if ($errors) {
     redirect_with_errors('/login.php', 'login', $errors, $old);
   }
-
-  $pdo = getPDO();
 
   $user = fetch_user_by_email($pdo, $form_data['email']);
   if (!$user) {

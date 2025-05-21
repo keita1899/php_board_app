@@ -1,13 +1,20 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
 
-function get_threads($pdo) {
+function fetch_threads($pdo) {
   try {
     $sql = <<<SQL
       SELECT 
-        threads.*
+        threads.id AS id,
+        threads.user_id,
+        threads.title,
+        threads.created_at,
+        threads.updated_at,
+        users.first_name,
+        users.last_name
       FROM 
         threads
+      JOIN
+        users ON threads.user_id = users.id
       ORDER BY 
         threads.created_at DESC
     SQL;
@@ -21,13 +28,21 @@ function get_threads($pdo) {
   }
 }
 
-function get_thread($pdo, $thread_id) {
+function fetch_thread($pdo, $thread_id) {
   try {
     $sql = <<<SQL
       SELECT 
-        threads.*
+        threads.id AS id,
+        threads.user_id,
+        threads.title,
+        threads.created_at,
+        threads.updated_at,
+        users.first_name,
+        users.last_name
       FROM 
         threads
+      JOIN
+        users ON threads.user_id = users.id
       WHERE
         threads.id = ?
     SQL;

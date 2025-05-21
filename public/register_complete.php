@@ -2,6 +2,7 @@
 session_start();
 require_once __DIR__ . '/../src/lib/csrf.php';
 require_once __DIR__ . '/../src/app/register.php';
+require_once __DIR__ . '/../src/config/database.php';
 
 if (!isset($_SESSION['register_data'])) {
   redirect('register.php');
@@ -18,7 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   if (isset($_POST['submit'])) {
-    register_complete();
+    $pdo = getPDO();
+    register_complete($pdo);
   }
 }
 ?>

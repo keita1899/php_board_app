@@ -5,28 +5,9 @@ require_once __DIR__ . '/../lib/util.php';
 require_once __DIR__ . '/../config/message.php';
 require_once __DIR__ . '/../lib/flash_message.php';
 require_once __DIR__ . '/../lib/auth.php';
+require_once __DIR__ . '/../models/user.php';
 
-function is_email_taken($pdo, $email) {
-  $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE email = ?');
-  $stmt->execute([$email]);
-  return $stmt->fetchColumn() > 0;
-}
-
-function create_user($pdo, $email, $password, $last_name, $first_name, $gender, $prefecture, $address) {
-  try {
-    $hash = password_hash($password, PASSWORD_DEFAULT);
-    $stmt = $pdo->prepare(
-      'INSERT INTO users (email, password, last_name, first_name, gender, prefecture, address) VALUES (?, ?, ?, ?, ?, ?, ?)'
-    );
-    $stmt->execute([$email, $hash, $last_name, $first_name, $gender, $prefecture, $address]);
-    return $pdo->lastInsertId();
-  } catch (PDOException $e) {
-    error_log('User insert error: ' . $e->getMessage());
-    return null;
-  }
-}
-
-function register_input($form_data) {
+function register_input($pdo, $form_data) {
   $old = [
     'last_name' => $form_data['last_name'] ?? '',
     'first_name' => $form_data['first_name'] ?? '',
@@ -36,7 +17,6 @@ function register_input($form_data) {
     'email' => $form_data['email'] ?? '',
   ];
 
-  $pdo = getPDO();
   $errors = validate_register($pdo, $form_data);
   
   if ($errors) {
@@ -63,13 +43,12 @@ function register_confirm() {
   return $_SESSION['register_data'];
 }
 
-function register_complete() {
+function register_complete($pdo) {
   if (!isset($_SESSION['register_data'])) {
     redirect('register.php');
   }
 
   $form_data = $_SESSION['register_data'];
-  $pdo = getPDO();
 
   $user_id = create_user(
     $pdo,

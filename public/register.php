@@ -4,6 +4,7 @@ require_once __DIR__ . '/../src/lib/csrf.php';
 require_once __DIR__ . '/../src/app/register.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
+require_once __DIR__ . '/../src/config/database.php';
 
 if (!isset($_SERVER['HTTP_REFERER']) || 
   !in_array(parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH), ['/register.php', '/register_confirm.php'])) {
@@ -44,7 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     'password_confirm' => $_POST['password_confirm'] ?? '',
   ];
 
-  register_input($form_data);
+  $pdo = getPDO();
+  register_input($pdo, $form_data);
 }
 ?>
 

@@ -5,6 +5,7 @@ require_once __DIR__ . '/../src/app/login.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
 require_once __DIR__ . '/../src/lib/flash_message.php';
+require_once __DIR__ . '/../src/config/database.php';
 
 $errors = get_form_errors('login');
 $old = get_form_old('login');
@@ -22,7 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     'password' => $_POST['password'] ?? '',
   ];
 
-  login($form_data);
+  $pdo = getPDO();
+
+  login($pdo, $form_data);
 }
 ?>
 

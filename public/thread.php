@@ -1,11 +1,12 @@
 <?php
 session_start();
 require_once __DIR__ . '/../src/lib/csrf.php';
-require_once __DIR__ . '/../src/app/thread.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
 require_once __DIR__ . '/../src/lib/flash_message.php';
 require_once __DIR__ . '/../src/lib/auth.php';
+require_once __DIR__ . '/../src/config/database.php';
+require_once __DIR__ . '/../src/models/thread.php';
 
 $pdo = getPDO();
 
@@ -16,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         redirect('index.php');
     }
 
-    $thread = get_thread($pdo, $thread_id);
+    $thread = fetch_thread($pdo, $thread_id);
     if (!$thread) {
         set_flash_message('error', 'thread', 'not_found');
         redirect('index.php');
@@ -38,18 +39,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect('index.php');
     }
 
-    $thread = get_thread($pdo, $thread_id);
+    $thread = fetch_thread($pdo, $thread_id);
     if (!$thread) {
         set_flash_message('error', 'thread', 'not_found');
         redirect('index.php');
     }
 
-    if (!is_thread_owner($thread['user_id'], $_SESSION['user_id'])) {
+    if (!is_thread_owner($thread['user_id'], (int)$_SESSION['user_id'])) {
         set_flash_message('error', 'thread', 'not_owner');
         redirect('index.php');
     }
 
-    if (delete_thread($pdo, $thread_id, $_SESSION['user_id'])) {
+    if (delete_thread($pdo, $thread_id, (int)$_SESSION['user_id'])) {
         set_flash_message('success', 'thread', 'deleted');
         redirect('index.php');
     } else {
@@ -78,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="thread">
             <div class="thread-header">
                 <span class="thread-date">投稿日時: <?= htmlspecialchars((new DateTime($thread['created_at']))->format('Y/m/d H:i')) ?></span>
-                <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] === $thread['user_id']): ?>
+                <?php if (isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] === $thread['user_id']): ?>
                     <a href="edit.php?id=<?= $thread['id'] ?>" class="edit-link">編集</a>
                     <form action="thread.php?id=<?= $thread['id'] ?>" method="post">
                         <input type="hidden" name="id" value="<?= htmlspecialchars($thread['id']) ?>">
