@@ -2,11 +2,12 @@
 session_start();
 
 require_once __DIR__ . '/../src/lib/csrf.php';
-require_once __DIR__ . '/../src/app/thread.php';
 require_once __DIR__ . '/../src/validations/thread.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
 require_once __DIR__ . '/../src/lib/flash_message.php';
+require_once __DIR__ . '/../src/config/database.php';
+require_once __DIR__ . '/../src/models/thread.php';
 
 $errors = get_form_errors('thread');
 $old = get_form_old('thread');
@@ -25,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   if ($keyword !== '' && empty($errors)) {
     $threads = search_threads($pdo, $keyword);
   } else {
-    $threads = get_threads($pdo);
+    $threads = fetch_threads($pdo);
   }
 }
 

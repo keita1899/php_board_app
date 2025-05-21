@@ -3,11 +3,12 @@ session_start();
 
 require_once __DIR__ . '/../src/lib/auth.php';
 require_once __DIR__ . '/../src/lib/csrf.php';
-require_once __DIR__ . '/../src/app/thread.php';
 require_once __DIR__ . '/../src/validations/thread.php';
 require_once __DIR__ . '/../src/lib/util.php';
 require_once __DIR__ . '/../src/config/message.php';
 require_once __DIR__ . '/../src/lib/flash_message.php';
+require_once __DIR__ . '/../src/config/database.php';
+require_once __DIR__ . '/../src/models/thread.php';
 
 require_login();
 
@@ -25,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     redirect('index.php');
   }
 
-  $thread = get_thread($pdo, $thread_id);
+  $thread = fetch_thread($pdo, $thread_id);
   if (!$thread) {
     set_flash_message('error', 'thread', 'not_found');
     redirect('index.php');

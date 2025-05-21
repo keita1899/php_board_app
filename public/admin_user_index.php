@@ -4,7 +4,7 @@ session_start();
 require_once __DIR__ . '/../src/lib/auth.php';
 require_once __DIR__ . '/../src/lib/csrf.php';
 require_once __DIR__ . '/../src/config/database.php';
-require_once __DIR__ . '/../src/app/user.php';
+require_once __DIR__ . '/../src/models/user.php';
 
 require_admin_login();
 

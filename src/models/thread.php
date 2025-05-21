@@ -1,7 +1,6 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
 
-function get_threads($pdo) {
+function fetch_threads($pdo) {
   try {
     $sql = <<<SQL
       SELECT 
@@ -21,7 +20,7 @@ function get_threads($pdo) {
   }
 }
 
-function get_thread($pdo, $thread_id) {
+function fetch_thread($pdo, $thread_id) {
   try {
     $sql = <<<SQL
       SELECT 
