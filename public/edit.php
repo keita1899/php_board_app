@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     redirect('index.php');
   }
 
-  if (!is_thread_owner($thread['user_id'], $_SESSION['user_id'])) {
+  if (!is_thread_owner($thread['user_id'], (int)$_SESSION['user_id'])) {
     set_flash_message('error', 'thread', 'not_owner');
     redirect('index.php');
   }
