@@ -34,6 +34,7 @@ $user = fetch_user_by_id($pdo, $_GET['id']);
     <p>メールアドレス: <?= htmlspecialchars($user['email']); ?></p>
     <p>作成日時: <?= htmlspecialchars($user['created_at']); ?></p>
     <p>更新日時: <?= htmlspecialchars($user['updated_at']); ?></p>
+    <p><a href="admin_user_index.php" class="button">会員一覧に戻る</a></p>
   </div>
 
 </body>
