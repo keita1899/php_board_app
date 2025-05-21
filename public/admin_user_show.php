@@ -10,7 +10,21 @@ require_once __DIR__ . '/../src/lib/helper.php';
 require_admin_login();
 
 $pdo = getPDO();
-$user = fetch_user_by_id($pdo, $_GET['id']);
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+  $user_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?? null;
+  if (!$user_id) {
+      set_flash_message('error', 'user', 'invalid_id');
+      redirect('admin_user_index.php');
+  }
+  
+  $user = fetch_user_by_id($pdo, $user_id);
+  if (!$user) {
+      set_flash_message('error', 'user', 'not_found');
+      redirect('admin_user_index.php');
+  }
+}
+
 
 ?>
 <!DOCTYPE html>
