@@ -25,6 +25,12 @@ function fetch_users($pdo, $order = 'desc') {
   return $stmt->fetchAll();
 }
 
+function fetch_user_by_id($pdo, $user_id) {
+  $stmt = $pdo->prepare('SELECT * FROM users WHERE id = :id');
+  $stmt->execute(['id' => $user_id]);
+  return $stmt->fetch();
+}
+
 function delete_user($pdo, $user_id) {
   require_login();
 

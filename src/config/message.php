@@ -32,6 +32,8 @@ const MESSAGES = [
       'require_admin_login' => '管理者としてログインしてください。',
     ],
     'user' => [
+      'invalid_id' => '不正なIDです。',
+      'not_found' => 'ユーザーが見つかりません。',
       'last_name_max_length' => '姓は255文字以内で入力してください。',
       'first_name_max_length' => '名は255文字以内で入力してください。',
       'address_max_length' => '住所は255文字以内で入力してください。',
