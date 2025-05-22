@@ -61,9 +61,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             redirect_with_errors('thread.php?id=' . $thread_id, 'comment', $errors, $_POST);
         }
 
-        create_comment($pdo, $thread_id, (int)$_SESSION['user_id'], $content);
-        set_flash_message('success', 'comment', 'created');
-        redirect('thread.php?id=' . $thread_id);
+        if (create_comment($pdo, $thread_id, (int)$_SESSION['user_id'], $content)) {
+            set_flash_message('success', 'comment', 'created');
+            redirect('thread.php?id=' . $thread_id);
+        } else {
+            set_flash_message('error', 'comment', 'create_failed');
+            redirect_with_errors('thread.php?id=' . $thread_id, 'comment', $errors, $_POST);
+        }
     }
 
     if (!is_thread_owner($thread['user_id'], (int)$_SESSION['user_id'])) {
