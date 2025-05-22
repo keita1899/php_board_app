@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         set_flash_message('error', 'thread', 'not_found');
         redirect('index.php');
     }
+    $comments = fetch_comments_by_thread_id($pdo, $thread_id);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -51,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         set_flash_message('error', 'thread', 'not_found');
         redirect('index.php');
     }
+
     if (isset($_POST['comment'])) {
         $content = trim($_POST['content']);
         $errors['content'] = validate_comment($content);
@@ -116,6 +118,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
         </div>
+
+        <div class="comments">
+            <h2>コメント一覧</h2>
+            <?php if (!empty($comments)): ?>
+                <?php foreach ($comments as $comment): ?>
+                    <div class="comment">
+                        <span class="comment-author">
+                            <?= htmlspecialchars($comment['last_name'] . ' ' . $comment['first_name']) ?>
+                        </span>
+                        <span class="comment-date">
+                            <?= htmlspecialchars((new DateTime($comment['created_at']))->format('Y/m/d H:i')) ?>
+                        </span>
+                        <div class="comment-content">
+                            <?= nl2br(htmlspecialchars($comment['content'])) ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>コメントはまだありません。</p>
+            <?php endif; ?>
+        </div>
+
         <?php if (isset($_SESSION['user_id'])): ?>
             <div class="comment-form">
                 <h2>コメントを投稿する</h2>
