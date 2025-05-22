@@ -23,6 +23,7 @@ const MESSAGES = [
       'required' => 'を入力してください。',
       'select' => 'を選択してください。',
       'max_length' => 'は{max_length}文字以内で入力してください。',
+      'min_length' => 'は{min_length}文字以上で入力してください。',
     ],
     'auth' => [
       'require_login' => 'ログインしてください。',
