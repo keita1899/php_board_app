@@ -17,6 +17,9 @@ const MESSAGES = [
       'updated' => 'アカウントを更新しました。',
       'deleted' => 'アカウントを削除しました。',
     ],
+    'comment' => [
+      'created' => 'コメントを投稿しました。',
+    ],
   ],
   'error' => [
     'common' => [
