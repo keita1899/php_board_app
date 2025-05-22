@@ -7,8 +7,15 @@ require_once __DIR__ . '/../src/lib/flash_message.php';
 require_once __DIR__ . '/../src/lib/auth.php';
 require_once __DIR__ . '/../src/config/database.php';
 require_once __DIR__ . '/../src/models/thread.php';
+require_once __DIR__ . '/../src/models/comment.php';
+require_once __DIR__ . '/../src/validations/comment.php';
 
 $pdo = getPDO();
+$errors = get_form_errors('comment');
+$old = get_form_old('comment');
+
+clear_form_errors('comment');
+clear_form_old('comment');
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $thread_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?? null;
@@ -22,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         set_flash_message('error', 'thread', 'not_found');
         redirect('index.php');
     }
+    $comments = fetch_comments_by_thread_id($pdo, $thread_id);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -43,6 +51,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$thread) {
         set_flash_message('error', 'thread', 'not_found');
         redirect('index.php');
+    }
+
+    if (isset($_POST['comment'])) {
+        $content = trim($_POST['content']);
+        $errors['content'] = validate_comment($content);
+
+        if (array_filter($errors)) {
+            redirect_with_errors('thread.php?id=' . $thread_id, 'comment', $errors, $_POST);
+        }
+
+        if (create_comment($pdo, $thread_id, (int)$_SESSION['user_id'], $content)) {
+            set_flash_message('success', 'comment', 'created');
+            redirect('thread.php?id=' . $thread_id);
+        } else {
+            set_flash_message('error', 'comment', 'create_failed');
+            redirect_with_errors('thread.php?id=' . $thread_id, 'comment', $errors, $_POST);
+        }
     }
 
     if (!is_thread_owner($thread['user_id'], (int)$_SESSION['user_id'])) {
@@ -97,6 +122,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
         </div>
+
+        <div class="comments">
+            <h2>コメント一覧</h2>
+            <?php if (!empty($comments)): ?>
+                <?php foreach ($comments as $comment): ?>
+                    <div class="comment">
+                        <span class="comment-author">
+                            <?= htmlspecialchars($comment['last_name'] . ' ' . $comment['first_name']) ?>
+                        </span>
+                        <span class="comment-date">
+                            <?= htmlspecialchars((new DateTime($comment['created_at']))->format('Y/m/d H:i')) ?>
+                        </span>
+                        <div class="comment-content">
+                            <?= nl2br(htmlspecialchars($comment['content'])) ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>コメントはまだありません。</p>
+            <?php endif; ?>
+        </div>
+
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <div class="comment-form">
+                <h2>コメントを投稿する</h2>
+                <form action="thread.php?id=<?= $thread['id'] ?>" method="post">
+                    <input type="hidden" name="id" value="<?= htmlspecialchars($thread['id']) ?>">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
+                    <textarea name="content" rows="3" cols="50" ><?= htmlspecialchars($old['content'] ?? '') ?></textarea>
+                    <?php $name = 'content'; include __DIR__ . '/../src/partials/error_message.php'; ?>
+                    <br>
+                    <button type="submit" name="comment">投稿</button>
+                </form>
+            </div>
+        <?php endif; ?>
     </div>
 </body>
 </html>
