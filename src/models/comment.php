@@ -18,3 +18,8 @@ function create_comment($pdo, $thread_id, $user_id, $content) {
     $stmt = $pdo->prepare($sql);
     return $stmt->execute([$thread_id, $user_id, $content]);
 }
+
+function delete_comment($pdo, $comment_id, $user_id) {
+    $stmt = $pdo->prepare('DELETE FROM comments WHERE id = ? AND user_id = ?');
+    return $stmt->execute([$comment_id, $user_id]);
+}
