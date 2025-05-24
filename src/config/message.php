@@ -19,6 +19,7 @@ const MESSAGES = [
     ],
     'comment' => [
       'created' => 'コメントを投稿しました。',
+      'deleted' => 'コメントを削除しました。',
     ],
   ],
   'error' => [
@@ -62,6 +63,9 @@ const MESSAGES = [
     ],
     'database' => [
       'connection_error' => 'データベース接続エラーが発生しました。管理者にお問い合わせください。',
+    ],
+    'comment' => [
+      'delete_failed' => 'コメントの削除に失敗しました。',
     ],
   ]
 ];

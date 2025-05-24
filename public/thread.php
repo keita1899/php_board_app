@@ -70,6 +70,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if (isset($_POST['delete_comment']) && isset($_POST['delete_comment_id'])) {
+        $comment_id = (int)$_POST['delete_comment_id'];
+
+        if (delete_comment($pdo, $comment_id, (int)$_SESSION['user_id'])) {
+            set_flash_message('success', 'comment', 'deleted');
+        } else {
+            set_flash_message('error', 'comment', 'delete_failed');
+        }
+        redirect('thread.php?id=' . $thread_id);
+    }
+
     if (!is_thread_owner($thread['user_id'], (int)$_SESSION['user_id'])) {
         set_flash_message('error', 'thread', 'not_owner');
         redirect('index.php');
@@ -137,6 +148,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="comment-content">
                             <?= nl2br(htmlspecialchars($comment['content'])) ?>
                         </div>
+                        <?php if (isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] === (int)$comment['user_id']): ?>
+                            <form action="thread.php?id=<?= $thread['id'] ?>" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="<?= htmlspecialchars($thread['id']) ?>">
+                                <input type="hidden" name="delete_comment_id" value="<?= htmlspecialchars($comment['id']) ?>">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token()) ?>">
+                                <button type="submit" name="delete_comment" onclick="return confirm('本当に削除しますか？')">削除</button>
+                            </form>
+                        <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
