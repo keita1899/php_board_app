@@ -66,6 +66,7 @@ const MESSAGES = [
     ],
     'comment' => [
       'delete_failed' => 'コメントの削除に失敗しました。',
+      'not_found' => 'コメントが見つかりません。',
     ],
   ]
 ];

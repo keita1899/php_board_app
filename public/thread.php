@@ -72,6 +72,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['delete_comment']) && isset($_POST['delete_comment_id'])) {
         $comment_id = (int)$_POST['delete_comment_id'];
+        if (!validate_comment_exists($pdo, $thread_id, $comment_id)) {
+            set_flash_message('error', 'comment', 'not_found');
+            redirect('thread.php?id=' . $thread_id);
+        }
 
         if (delete_comment($pdo, $comment_id, (int)$_SESSION['user_id'])) {
             set_flash_message('success', 'comment', 'deleted');
