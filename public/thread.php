@@ -8,6 +8,7 @@ require_once __DIR__ . '/../src/lib/auth.php';
 require_once __DIR__ . '/../src/config/database.php';
 require_once __DIR__ . '/../src/models/thread.php';
 require_once __DIR__ . '/../src/models/comment.php';
+require_once __DIR__ . '/../src/models/thread_view.php';
 require_once __DIR__ . '/../src/validations/comment.php';
 
 $pdo = getPDO();
@@ -30,6 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         redirect('index.php');
     }
     $comments = fetch_comments_by_thread_id($pdo, $thread_id);
+
+    if (isset($_SESSION['user_id'])) {
+        save_thread_view($pdo, (int)$_SESSION['user_id'], $thread_id);
+    }
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
